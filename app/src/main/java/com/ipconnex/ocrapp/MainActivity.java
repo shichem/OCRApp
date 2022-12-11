@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.Log;
@@ -22,6 +23,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration appBarConfiguration;
@@ -35,6 +44,12 @@ public class MainActivity extends AppCompatActivity {
                 croppedImageView.setImageBitmap(
                         BitmapFactory.decodeFile(croppedImageResults.get(0))
                 );
+                //croppedImageView img json
+                try {
+                    DataManager.sendInvoice(croppedImageResults.get(0));
+                }catch (Exception e){
+                    Log.v("Error",e.getMessage());
+                }
                 return null;
             },
             (errorMessage) -> {
