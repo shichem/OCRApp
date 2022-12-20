@@ -1,8 +1,10 @@
 package com.ipconnex.ocrapp;
 
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.NonNull;
@@ -16,14 +18,24 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.ipconnex.ocrapp.databinding.ActivityMainBinding;
+import com.ipconnex.ocrapp.design.AddScan;
+import com.ipconnex.ocrapp.design.ScansList;
+import com.ipconnex.ocrapp.design.Settings;
 import com.websitebeaver.documentscanner.DocumentScanner;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -33,10 +45,16 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
+
+    AddScan addScan=new AddScan();
+    ScansList scansList=new ScansList();
+    Settings settings=new Settings();
+    BottomNavigationView bottomNavigationView;
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
     private ImageView croppedImageView;
-
+    Intent intent;
+        /*
     DocumentScanner documentScanner = new DocumentScanner(
             this,
             (croppedImageResults) -> {
@@ -47,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
                 //croppedImageView img json
                 try {
                     DataManager.sendInvoice(croppedImageResults.get(0));
+                    DataManager.getInvoices();
                 }catch (Exception e){
                     Log.v("Error",e.getMessage());
                 }
@@ -65,20 +84,47 @@ public class MainActivity extends AppCompatActivity {
             null,
             null,
             null
-    );
+    );*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate( savedInstanceState );
+        intent= new Intent(this,CameraScanActivity.class);
         setContentView(R.layout.activity_main);
+        bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        bottomNavigationView.setOnNavigationItemSelectedListener(
+                item-> {
+                    switch (item.getItemId()) {
+                        case R.id.scan:
 
+                            startActivity(intent);
+                            getSupportFragmentManager().beginTransaction().replace(R.id.Fragment, addScan).commit();
+
+                            return true;
+
+                        case R.id.scans_list:
+                            getSupportFragmentManager().beginTransaction().replace(R.id.Fragment, scansList).commit();
+
+                            return true;
+
+                        case R.id.settings:
+                            getSupportFragmentManager().beginTransaction().replace(R.id.Fragment, settings).commit();
+                            return true;
+                    }
+                    return false;
+                }
+        );
+        bottomNavigationView.setSelectedItemId(R.id.settings);
+        DataManager.setMainActivity(this);
+        scansList.setMainActivity(this);
+        /*
         // cropped image
-        croppedImageView = findViewById(R.id.cropped_image_view);
-        // start document scan
-        // start document scan
-        documentScanner.startScan();
+*/
 
     }
+    public void toasterInternetError(){
 
+        Toast.makeText(this, "Erreur du serveur ... " ,Toast.LENGTH_SHORT).show();
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -106,5 +152,51 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController( this, R.id.nav_host_fragment_content_main );
         return NavigationUI.navigateUp( navController, appBarConfiguration )
                 || super.onSupportNavigateUp();
+    }
+
+    public void setRecivedInvoice(String json) {
+        runOnUiThread( new Runnable() {
+            public void run() {
+
+                try{
+                    JSONObject data = new JSONObject(json);
+
+                    addScan.setData(data.getString("image"),data.getString("id_facture"),
+                            data.getString("id_client"),
+                    data.getString("id_magasin"),
+                    data.getString("t_vendu"),
+                    data.getString("t_retour"),
+                    data.getString("total"));
+                    /* String image = jInvoice.getString("image") ; */
+
+                }catch (Exception e){
+                    //parsing error
+
+                }
+
+
+            }
+        });
+        addScan.setLoading(false);
+    }
+
+    public void startToast(String message) {
+        MainActivity m = this ;
+        runOnUiThread( new Runnable() {
+            public void run() {
+                Toast.makeText(m, message ,Toast.LENGTH_SHORT).show();
+
+            }
+        });
+    }
+    public void clearData() {
+
+        runOnUiThread( new Runnable() {
+            public void run() {
+                addScan.setData("","","","","","","");
+                getSupportFragmentManager().beginTransaction().replace(R.id.Fragment, scansList).commit();
+            }
+        });
+
     }
 }

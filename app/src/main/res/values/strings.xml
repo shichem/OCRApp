@@ -9,4 +9,22 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="id_invoice">Facture :</string>
+    <string name="id_customer">Client :</string>
+    <string name="id_shop">Magasin :</string>
+    <string name="t_vendu">Vendu ($):</string>
+    <string name="t_retour">Retour ($):</string>
+    <string name="total">Total ($):</string>
+
+    <string name="validate">Valider la facture</string>
+    <string name="scans_list">Factures</string>
+    <string name="add_scan">Ajouter un scan</string>
+    <string name="settings">Parametres</string>
+
+    <string name="ok">Valider</string>
+    <string name="title_activity_camera_scan">CameraScanActivity</string>
+    <string name="loading">Chargement des données ...</string>
 </resources>

@@ -1,11 +1,21 @@
 package com.ipconnex.ocrapp;
 
 import android.util.Log;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.ipconnex.ocrapp.model.Invoice;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
+import java.lang.Exception;
+import java.util.ArrayList;
+
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -19,11 +29,70 @@ import okhttp3.Response;
 public class DataManager {
 
     private static OkHttpClient client = new OkHttpClient();
-
+    private static MainActivity mainActivity;
+    private static CameraScanActivity cameraScanActivity;
     private static  final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private static final MediaType MEDIA_TYPE = MediaType.parse("image");
     private static final String URL_FACTURES = "https://ocr-api.ipconnex.com/api/factures/";
     private static final String URL_CAPTURES= "https://ocr-api.ipconnex.com/api/captures/";
+
+    public static void setMainActivity(MainActivity mainActivity) {
+        DataManager.mainActivity = mainActivity;
+    }
+
+    public static void setCameraScanActivity(CameraScanActivity cameraScanActivity) {
+        DataManager.cameraScanActivity = cameraScanActivity;
+    }
+
+    public static void getInvoices () throws Exception {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(URL_FACTURES)
+                .build();
+        client.newCall(request).enqueue(
+                new Callback() {
+                    @Override
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+
+                        Toast.makeText(mainActivity, "Erreur de connection ... " ,Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onResponse(@NonNull Call call, @NonNull Response response) {
+                        try{
+                            String s = response.body().string();
+                            JSONArray json = new JSONArray(s);
+                            ArrayList<Invoice> list = new ArrayList<Invoice>();
+                            for(int i=0; i < json.length();i++ ){
+                                JSONObject jInvoice = new JSONObject(json.get(i).toString());
+                                String image = jInvoice.getString("image") ;
+                                String numFacture = jInvoice.getString("id_facture") ;
+                                String numMagasin = jInvoice.getString("id_magasin") ;
+                                String numClient = jInvoice.getString("id_client") ;
+                                String t_vendu = jInvoice.getString("t_vendu") ;
+                                String t_retour = jInvoice.getString("t_retour") ;
+                                String total = jInvoice.getString("total") ;
+                                list.add(new Invoice(image,numFacture,numMagasin,numClient,t_vendu,t_retour,total));
+                            }
+                            mainActivity.scansList.setListRequest(list);
+
+
+                        }catch (Exception e){
+                            Toast.makeText(mainActivity, "Erreur du serveur ... " ,Toast.LENGTH_SHORT).show();
+
+
+                        }
+
+
+                     }
+                }
+
+        );
+
+    }
+
+
+
     public static void sendInvoice(String img_path) throws Exception  {
         Log.v("img path",img_path);
         OkHttpClient client = new OkHttpClient();
@@ -51,7 +120,10 @@ public class DataManager {
 
                     @Override
                     public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                        Log.v("Api Response",response.body().string());
+                        String result = response.body().string();
+                        Log.v("Api Response",result);
+                        cameraScanActivity.finish();
+                        mainActivity.setRecivedInvoice(result);
                     }
                 }
 
@@ -78,12 +150,14 @@ public class DataManager {
                 new Callback() {
                     @Override
                     public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                        Log.v("Errpr api ",e.getMessage());
+                        mainActivity.startToast( "Erreur de connection ... ");
                     }
 
                     @Override
                     public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                        Log.v("done",response.body().string());
+
+                        mainActivity.startToast( "Facture ajouté avec succes" );
+                        mainActivity.clearData();
 
                     }
                 }
