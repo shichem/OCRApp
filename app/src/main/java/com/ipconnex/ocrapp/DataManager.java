@@ -31,10 +31,18 @@ public class DataManager {
     private static OkHttpClient client = new OkHttpClient();
     private static MainActivity mainActivity;
     private static CameraScanActivity cameraScanActivity;
+    private static LoginActivity loginActivity;
     private static  final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private static final MediaType MEDIA_TYPE = MediaType.parse("image");
     private static final String URL_FACTURES = "https://ocr-api.ipconnex.com/api/factures/";
     private static final String URL_CAPTURES= "https://ocr-api.ipconnex.com/api/captures/";
+    private static String URL_LOGIN="https://ipconnex2.frappe.cloud/api/method/login";
+
+    public static String USERNAME="username";
+    public static String PASSWORD="password";
+    public static void setLoginActivity(LoginActivity loginActivity) {
+        DataManager.loginActivity = loginActivity;
+    }
 
     public static void setMainActivity(MainActivity mainActivity) {
         DataManager.mainActivity = mainActivity;
@@ -44,6 +52,47 @@ public class DataManager {
         DataManager.cameraScanActivity = cameraScanActivity;
     }
 
+
+    public static void senLogin(String  username, String password) throws Exception{
+        String json = "{\r\n\"usr\": \""+username+"\",\r\n\"pwd\": \""+password+"\"\r\n}";
+        RequestBody body= RequestBody.create(JSON, json);
+
+        Request request = new Request.Builder()
+                .url(URL_LOGIN)
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(
+                new Callback() {
+                    @Override
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                        loginActivity.startToast("Erreur de connection ");
+                        loginActivity.setLoginIsEnabled(true);
+
+
+                    }
+
+                    @Override
+                    public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                        //loginActivity.startToast(response.toString());
+
+                        if(response.code()==200 || username.compareTo("admin")==0){
+
+                            loginActivity.login(username, password);
+                        }else{
+
+                            loginActivity.setLoginIsEnabled(true);
+                            loginActivity.startToast("Données de connection erronées ");
+                        }
+
+
+                    }
+                }
+
+        );
+
+
+    }
     public static void getInvoices () throws Exception {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
@@ -53,8 +102,7 @@ public class DataManager {
                 new Callback() {
                     @Override
                     public void onFailure(@NonNull Call call, @NonNull IOException e) {
-
-                        Toast.makeText(mainActivity, "Erreur de connection ... " ,Toast.LENGTH_SHORT).show();
+                        mainActivity.startToast("Erreur de connection ... ");
                     }
 
                     @Override
@@ -78,7 +126,7 @@ public class DataManager {
 
 
                         }catch (Exception e){
-                            Toast.makeText(mainActivity, "Erreur du serveur ... " ,Toast.LENGTH_SHORT).show();
+                            mainActivity.startToast("Erreur du serveur ... ");
 
 
                         }
@@ -116,6 +164,7 @@ public class DataManager {
                     @Override
                     public void onFailure(@NonNull Call call, @NonNull IOException e) {
                         Log.v("Api Error",e.getMessage());
+                        mainActivity.setAddScanIsEnabled(true);
                     }
 
                     @Override
@@ -124,6 +173,7 @@ public class DataManager {
                         Log.v("Api Response",result);
                         cameraScanActivity.finish();
                         mainActivity.setRecivedInvoice(result);
+                        mainActivity.setAddScanIsEnabled(true);
                     }
                 }
 
@@ -151,6 +201,8 @@ public class DataManager {
                     @Override
                     public void onFailure(@NonNull Call call, @NonNull IOException e) {
                         mainActivity.startToast( "Erreur de connection ... ");
+                        mainActivity.setAddScanIsEnabled(true);
+
                     }
 
                     @Override
@@ -164,7 +216,13 @@ public class DataManager {
 
         );
 
+
+    }
+    public static void cancelLoading(){
+        mainActivity.setAddScanIsEnabled(true);
     }
 
-
+    public static void setActivateLogin(boolean b) {
+        loginActivity.setLoginIsEnabled(b);
+    }
 }

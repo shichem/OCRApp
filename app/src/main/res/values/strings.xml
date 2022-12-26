@@ -27,4 +27,10 @@
     <string name="ok">Valider</string>
     <string name="title_activity_camera_scan">CameraScanActivity</string>
     <string name="loading">Chargement des données ...</string>
+    <string name="startCam">Lancer la camera</string>
+
+    <string name="passeword">Mot de passe</string>
+    <string name="user">Nom d\'utilisateur</string>
+    <string name="login">Se connecter</string>
+    <string name="logout">Se déconnecter</string>
 </resources>

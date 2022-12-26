@@ -11,7 +11,6 @@ import com.websitebeaver.documentscanner.DocumentScanner;
 public class CameraScanActivity extends AppCompatActivity {
 
     private ImageView croppedImageView;
-
     DocumentScanner documentScanner = new DocumentScanner(
             this,
             (croppedImageResults) -> {
@@ -25,6 +24,8 @@ public class CameraScanActivity extends AppCompatActivity {
                     DataManager.sendInvoice(croppedImageResults.get(0));
                 }catch (Exception e){
                     Log.v("Error",e.getMessage());
+
+                    DataManager.cancelLoading();
                 }
                 finish();
                 return null;
@@ -32,12 +33,16 @@ public class CameraScanActivity extends AppCompatActivity {
             (errorMessage) -> {
                 // an error happened
                 Log.v("documentscannerlogs", errorMessage);
+                DataManager.cancelLoading();
                 return null;
             },
             () -> {
                 Log.v("documentscannerlogs", "User canceled document scan");
 
+
                 this.finish();
+                DataManager.cancelLoading();
+
                 return null;
             },
             null,

@@ -1,6 +1,5 @@
 package com.ipconnex.ocrapp;
 
-import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
@@ -53,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
     private ImageView croppedImageView;
-    Intent intent;
         /*
     DocumentScanner documentScanner = new DocumentScanner(
             this,
@@ -88,22 +86,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate( savedInstanceState );
-        intent= new Intent(this,CameraScanActivity.class);
         setContentView(R.layout.activity_main);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setOnNavigationItemSelectedListener(
                 item-> {
                     switch (item.getItemId()) {
                         case R.id.scan:
-
-                            startActivity(intent);
                             getSupportFragmentManager().beginTransaction().replace(R.id.Fragment, addScan).commit();
-
                             return true;
 
                         case R.id.scans_list:
                             getSupportFragmentManager().beginTransaction().replace(R.id.Fragment, scansList).commit();
-
                             return true;
 
                         case R.id.settings:
@@ -113,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
                     return false;
                 }
         );
-        bottomNavigationView.setSelectedItemId(R.id.settings);
+        bottomNavigationView.setSelectedItemId(R.id.scan);
         DataManager.setMainActivity(this);
         scansList.setMainActivity(this);
         /*
@@ -177,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        addScan.setLoading(false);
+
     }
 
     public void startToast(String message) {
@@ -197,6 +190,19 @@ public class MainActivity extends AppCompatActivity {
                 getSupportFragmentManager().beginTransaction().replace(R.id.Fragment, scansList).commit();
             }
         });
+
+    }
+
+    public void setAddScanIsEnabled(boolean b) {
+
+
+        runOnUiThread( new Runnable() {
+            public void run() {
+                addScan.setIsEnabled(b);
+            }
+
+        });
+
 
     }
 }

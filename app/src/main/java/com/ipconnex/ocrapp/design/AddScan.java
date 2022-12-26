@@ -1,5 +1,6 @@
 package com.ipconnex.ocrapp.design;
 
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
@@ -16,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
+import com.ipconnex.ocrapp.CameraScanActivity;
 import com.ipconnex.ocrapp.DataManager;
 import com.ipconnex.ocrapp.R;
 import com.websitebeaver.documentscanner.DocumentScanner;
@@ -33,7 +35,6 @@ public class AddScan extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private boolean isLoading=true;
     private String image = "";
     private TextInputLayout input_facture;
     private TextInputLayout input_client;
@@ -41,8 +42,9 @@ public class AddScan extends Fragment {
     private TextInputLayout input_t_vendu;
     private TextInputLayout input_t_retour;
     private TextInputLayout input_total;
-
-
+    private Intent intent;
+    private View buttonSendInv ;
+    private View buttonStartCam;
 
     public void setData(String img , String facture ,String magasin ,String client,String t_vendu ,String t_retour ,String total ){
 
@@ -54,6 +56,7 @@ public class AddScan extends Fragment {
         this.input_t_vendu.getEditText().setText(t_vendu);
         this.input_t_retour.getEditText().setText(t_retour);
         this.input_total.getEditText().setText(total);
+        setIsEnabled(true);
     }
 
     public ArrayList<String> getData(){
@@ -69,47 +72,11 @@ public class AddScan extends Fragment {
 
         return result;
     }
-    /*
-    DocumentScanner documentScanner = new DocumentScanner(
-            this.getActivity(),
-            (croppedImageResults) -> {
-                // display the first cropped image
-                /*
-                croppedImageView.setImageBitmap(
-                        BitmapFactory.decodeFile(croppedImageResults.get(0))
-                );*
-                //croppedImageView img json
-                try {
-                    DataManager.sendInvoice(croppedImageResults.get(0));
-                }catch (Exception e){
-                    Log.v("Error",e.getMessage());
-                }
-                return null;
-            },
-            (errorMessage) -> {
-                // an error happened
-                Log.v("documentscannerlogs", errorMessage);
-                return null;
-            },
-            () -> {
-                // user canceled document scan
-                Log.v("documentscannerlogs", "User canceled document scan");
-                return null;
-            },
-            null,
-            null,
-            null
-    );*/
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
     public AddScan() {
 
-
-    }
-
-    public void setLoading(boolean loading) {
-        isLoading = loading;
 
     }
 
@@ -145,41 +112,20 @@ public class AddScan extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         // start document scan
-       /*
-        View button = getActivity().findViewById(R.id.validateInvoice);
-        Log.v("Sending button ",button.toString());
-        button.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {   Log.v("Sending","data");
-                ArrayList<String> data = getData();
-
-                String image= data.get(0);
-                String facture= data.get(1);
-                String client= data.get(2);
-                String magasin= data.get(3);
-                String t_retour= data.get(4);
-                String t_vendu= data.get(5);
-                String total= data.get(6);
-                try{
-                    DataManager.sendForm(image,facture,magasin,client,t_vendu,t_retour,total);
-                }catch (Exception e ){
-                }
-            }
-        });
-*/
         View inflate = inflater.inflate(R.layout.fragment_add_scan, container, false);
-        View button = inflate.findViewById(R.id.validateInvoice);
-
+        buttonSendInv = inflate.findViewById(R.id.validateInvoice);
+        buttonStartCam = inflate.findViewById(R.id.startCamera);
         input_facture= (TextInputLayout) inflate.findViewById(R.id.factureField);
         input_client= (TextInputLayout)  inflate.findViewById(R.id.clientField);
         input_magasin= (TextInputLayout)  inflate.findViewById(R.id.magasinField);
         input_t_vendu= (TextInputLayout)  inflate.findViewById(R.id.venduField);
         input_t_retour= (TextInputLayout)  inflate.findViewById(R.id.retourField);
         input_total= (TextInputLayout)  inflate.findViewById(R.id.totalField);
-        Log.v("Sending button ",button.toString());
-        button.setOnClickListener(new View.OnClickListener()
+        intent= new Intent(getActivity(), CameraScanActivity.class);
+
+        // TODO set Editable false
+        setIsEnabled(true);
+        buttonSendInv.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
@@ -194,27 +140,34 @@ public class AddScan extends Fragment {
                 String t_vendu= data.get(5);
                 String total= data.get(6);
                 try{
+                    setIsEnabled(false);
                     DataManager.sendForm(image,facture,magasin,client,t_vendu,t_retour,total);
                 }catch (Exception e ){
                 }
             }
         });
+        buttonStartCam.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                // TODO set Editable false
+                setIsEnabled(false);
+                // TODO start new Activity
+                startActivity(intent);
+            }
+        });
         return inflate;
     }
-    public void onClickValidate(View v) {
-        Log.v("Sending","data");
-        ArrayList<String> data = getData();
+    public void setIsEnabled(boolean b ){
+        input_facture.setEnabled(b);
+        input_client.setEnabled(b);
+        input_magasin.setEnabled(b);
+        input_t_vendu.setEnabled(b);
+        input_t_retour.setEnabled(b);
+        input_total.setEnabled(b);
+        buttonStartCam.setEnabled(b);
+        buttonSendInv.setEnabled(b);
 
-        String image= data.get(0);
-        String facture= data.get(1);
-        String client= data.get(2);
-        String magasin= data.get(3);
-        String t_retour= data.get(4);
-        String t_vendu= data.get(5);
-        String total= data.get(6);
-        try{
-            DataManager.sendForm(image,facture,magasin,client,t_vendu,t_retour,total);
-        }catch (Exception e ){
-        }
     }
 }

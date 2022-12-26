@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LoginActivity">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/passewordField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/passeword"
+        app:startIconDrawable="@drawable/ic_baseline_lock_24"
+        android:layout_marginHorizontal="40dp"
+        android:layout_margin="20dp"
+        app:endIconMode="password_toggle"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/userField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="40dp"
+        android:hint="@string/user"
+        app:startIconDrawable="@drawable/ic_baseline_person_24"
+        android:layout_margin="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/passewordField"
+        tools:layout_editor_absoluteX="40dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/loginButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/login"
+        android:layout_marginVertical="20dp"
+        android:layout_marginHorizontal="120dp"
+        app:layout_constraintTop_toBottomOf="@+id/passewordField"
+
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
