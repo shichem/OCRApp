@@ -60,6 +60,9 @@ public class Invoice {
     public String getFacture() {
         return "Facture : "+ facture;
     }
+    public String getFactureNum() {
+        return  facture;
+    }
 
     public String getMagasin() {
         return "Magasin : "+magasin;

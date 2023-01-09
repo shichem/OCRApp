@@ -64,12 +64,51 @@ tools:context=".design.AddScan">
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/dateField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="310dp"
+            app:boxCornerRadiusBottomEnd="20dp"
+
+            android:hint="@string/date">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="date"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/qteField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="380dp"
+            app:boxCornerRadiusBottomEnd="20dp"
+
+            android:hint="@string/qte">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/venduField"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="320dp"
+            android:layout_marginTop="450dp"
             app:boxCornerRadiusBottomEnd="20dp"
 
             android:hint="@string/t_vendu">
@@ -86,7 +125,7 @@ tools:context=".design.AddScan">
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="390dp"
+            android:layout_marginTop="520dp"
             app:boxCornerRadiusBottomEnd="20dp"
 
             android:hint="@string/t_retour">
@@ -103,7 +142,7 @@ tools:context=".design.AddScan">
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="460dp"
+            android:layout_marginTop="590dp"
             app:boxCornerRadiusBottomEnd="20dp"
 
             android:hint="@string/total">
@@ -122,7 +161,7 @@ tools:context=".design.AddScan">
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="120dp"
-            android:layout_marginTop="550dp"
+            android:layout_marginTop="660dp"
             android:layout_marginBottom="40dp"
             android:clickable="true"
             android:text="@string/ok" />

@@ -111,7 +111,7 @@ public class DataManager {
                             String s = response.body().string();
                             JSONArray json = new JSONArray(s);
                             ArrayList<Invoice> list = new ArrayList<Invoice>();
-                            for(int i=0; i < json.length();i++ ){
+                            for(int i=json.length()-1; i >=0 ;i--){
                                 JSONObject jInvoice = new JSONObject(json.get(i).toString());
                                 String image = jInvoice.getString("image") ;
                                 String numFacture = jInvoice.getString("id_facture") ;
@@ -134,9 +134,7 @@ public class DataManager {
 
                      }
                 }
-
         );
-
     }
 
 

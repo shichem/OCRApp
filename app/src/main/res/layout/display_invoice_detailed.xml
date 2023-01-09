@@ -70,7 +70,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="50dp"
             >
 
 
@@ -103,6 +103,23 @@
                 android:text="@string/total"
                 android:textSize="16dp"
                 android:textStyle="bold" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="10dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/bttnDownloadPDF"
+                android:layout_marginHorizontal="100dp"
+                android:layout_marginTop="70dp"
+                android:text="@string/donwloadPDF"
+                />
         </LinearLayout>
     </RelativeLayout>
 

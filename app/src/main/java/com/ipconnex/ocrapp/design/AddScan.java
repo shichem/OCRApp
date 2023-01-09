@@ -64,8 +64,8 @@ public class AddScan extends Fragment {
         ArrayList<String> result = new ArrayList<String>();
         result.add(image);
         result.add(input_facture.getEditText().getText().toString());
-        result.add(input_client.getEditText().getText().toString());
         result.add(input_magasin.getEditText().getText().toString());
+        result.add(input_client.getEditText().getText().toString());
         result.add(input_t_vendu.getEditText().getText().toString());
         result.add(input_t_retour.getEditText().getText().toString());
         result.add(input_total.getEditText().getText().toString());
@@ -134,8 +134,8 @@ public class AddScan extends Fragment {
 
                 String image= data.get(0);
                 String facture= data.get(1);
-                String client= data.get(2);
-                String magasin= data.get(3);
+                String magasin= data.get(2);
+                String client= data.get(3);
                 String t_retour= data.get(4);
                 String t_vendu= data.get(5);
                 String total= data.get(6);

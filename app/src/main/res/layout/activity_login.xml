@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/passeword"
-        app:startIconDrawable="@drawable/ic_baseline_lock_24"
+        app:startIconDrawable="@drawable/ic_baseline_lock"
         android:layout_marginHorizontal="40dp"
         android:layout_margin="20dp"
         app:endIconMode="password_toggle"
@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="40dp"
         android:hint="@string/user"
-        app:startIconDrawable="@drawable/ic_baseline_person_24"
+        app:startIconDrawable="@drawable/ic_baseline_person"
         android:layout_margin="20dp"
         app:layout_constraintBottom_toTopOf="@+id/passewordField"
         tools:layout_editor_absoluteX="40dp">

@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import com.websitebeaver.documentscanner.DocumentScanner;
+import com.websitebeaver.documentscanner.constants.ResponseType;
 
 public class CameraScanActivity extends AppCompatActivity {
 
@@ -45,8 +46,8 @@ public class CameraScanActivity extends AppCompatActivity {
 
                 return null;
             },
-            null,
-            null,
+            ResponseType.IMAGE_FILE_PATH,
+            true,
             null
     );
     @Override

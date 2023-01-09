@@ -45,10 +45,10 @@ import okhttp3.Response;
 public class MainActivity extends AppCompatActivity {
 
 
-    AddScan addScan=new AddScan();
-    ScansList scansList=new ScansList();
-    Settings settings=new Settings();
-    BottomNavigationView bottomNavigationView;
+    public AddScan addScan=new AddScan();
+    public ScansList scansList=new ScansList();
+    public Settings settings=new Settings();
+    public BottomNavigationView bottomNavigationView;
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
     private ImageView croppedImageView;
@@ -155,11 +155,11 @@ public class MainActivity extends AppCompatActivity {
                     JSONObject data = new JSONObject(json);
 
                     addScan.setData(data.getString("image"),data.getString("id_facture"),
+                            data.getString("id_magasin"),
                             data.getString("id_client"),
-                    data.getString("id_magasin"),
-                    data.getString("t_vendu"),
-                    data.getString("t_retour"),
-                    data.getString("total"));
+                            data.getString("t_vendu"),
+                            data.getString("t_retour"),
+                            data.getString("total"));
                     /* String image = jInvoice.getString("image") ; */
 
                 }catch (Exception e){
@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
         runOnUiThread( new Runnable() {
             public void run() {
                 addScan.setData("","","","","","","");
-                getSupportFragmentManager().beginTransaction().replace(R.id.Fragment, scansList).commit();
+                bottomNavigationView.setSelectedItemId(R.id.scans_list);
             }
         });
 

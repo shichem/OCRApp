@@ -95,8 +95,6 @@ public class ScansList extends Fragment implements AdapterView.OnItemClickListen
         listView.setAdapter(invoicesList);
         listView.setOnItemClickListener(this);
         return view;
-
-
     }
 
 
@@ -106,7 +104,6 @@ public class ScansList extends Fragment implements AdapterView.OnItemClickListen
         invoicesList.updateResults();
         mainActivity.getSupportFragmentManager().beginTransaction().replace(R.id.Fragment, this).commit();
     }
-
     @NonNull
     @Override
     public CreationExtras getDefaultViewModelCreationExtras() {
