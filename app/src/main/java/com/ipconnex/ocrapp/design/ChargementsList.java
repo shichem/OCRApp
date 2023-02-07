@@ -2,11 +2,8 @@ package com.ipconnex.ocrapp.design;
 
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.viewmodel.CreationExtras;
 
-import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,8 +21,11 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.ipconnex.ocrapp.DataManager;
 import com.ipconnex.ocrapp.MainActivity;
 import com.ipconnex.ocrapp.R;
-import com.ipconnex.ocrapp.model.InvoicesList;
+import com.ipconnex.ocrapp.model.Chargement;
+import com.ipconnex.ocrapp.model.ChargementList;
 import com.ipconnex.ocrapp.model.Invoice;
+import com.ipconnex.ocrapp.model.InvoicesList;
+import com.ipconnex.ocrapp.model.ProductsList;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -34,22 +34,16 @@ import java.util.Date;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link ScansList#newInstance} factory method to
+ * Use the {@link ChargementsList#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ScansList extends Fragment implements AdapterView.OnItemClickListener {
+public class ChargementsList extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-    private InvoicesList invoicesList;
+    private ArrayList<String> data;
+    private ChargementList chargementList;
     private MainActivity mainActivity;
+
     private FloatingActionButton searchFAB ;
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
     private String[] options_daysA;
     private String[] options_monthA;
     private String[] options_yearsA;
@@ -61,12 +55,13 @@ public class ScansList extends Fragment implements AdapterView.OnItemClickListen
     private int selected_dayB=0,selected_monthB=0,selected_yearB=4;
     private AutoCompleteTextView sYearB,sMonthB,sDayB;
 
+    private TextInputLayout routeField;
+
     Date date = new Date();
     SimpleDateFormat year_formatter = new SimpleDateFormat("yyyy");
     private Integer thisYear = new Integer(year_formatter.format(date));
 
 
-    private TextInputLayout factureField,magasinField,clientField;
 
     public void setDatesListsA(){
         date = new Date();
@@ -292,33 +287,41 @@ public class ScansList extends Fragment implements AdapterView.OnItemClickListen
         sDayB.setText(sDayB.getAdapter().getItem(selected_dayB).toString(), false);
     }
 
-
-    public ScansList() {
-        // Required empty public constructor
-    }
-
-    public void setMainActivity(MainActivity mainActivity) {
-        this.mainActivity = mainActivity;
-    }
-
     private void refreshList(){
         try {
-            DataManager.getInvoices();
+            DataManager.getChargements();
         }catch (Exception e){
 
         }
     }
+    public void setMainActivity(MainActivity mainActivity) {
+        this.mainActivity = mainActivity;
+    }
+
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
+
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
+
+    public ChargementsList() {
+        // Required empty public constructor
+    }
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment ScansList.
+     * @return A new instance of fragment ChargementsList.
      */
     // TODO: Rename and change types and number of parameters
-    public static ScansList newInstance(String param1, String param2) {
-        ScansList fragment = new ScansList();
+    public static ChargementsList newInstance(String param1, String param2) {
+        ChargementsList fragment = new ChargementsList();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -339,21 +342,20 @@ public class ScansList extends Fragment implements AdapterView.OnItemClickListen
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        refreshList();
-        Toast.makeText(mainActivity, "Chargement des Factures ... " ,Toast.LENGTH_SHORT).show();
-        View view= inflater.inflate(R.layout.fragment_scans_list, container, false);
-        ListView listView = (ListView)view.findViewById(R.id.invoicesList);
 
-        invoicesList = new InvoicesList(mainActivity);
-        listView.setAdapter(invoicesList);
-        listView.setOnItemClickListener(this);
+        refreshList();
+        Toast.makeText(mainActivity, "Chargement des rapports ... " ,Toast.LENGTH_SHORT).show();
+        chargementList=new ChargementList(mainActivity);
+        View view= inflater.inflate(R.layout.fragment_chargements_list, container, false);
+        ListView listView = (ListView)view.findViewById(R.id.chargementsList);
+        listView.setAdapter(chargementList);
 
         searchFAB=view.findViewById(R.id.search_button);
         searchFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.v("Pressed","On click Invoice search");
-                View sheetView = getLayoutInflater().inflate(R.layout.bottom_sheet_facture, null);
+                Log.v("Pressed","On click Rapport search");
+                View sheetView = getLayoutInflater().inflate(R.layout.bottom_sheet_rapport, null);
                 Button b= sheetView.findViewById(R.id.validateSearch);
                 sYearA=sheetView.findViewById(R.id.dropBoxYearA);
                 sMonthA=sheetView.findViewById(R.id.dropBoxMonthA);
@@ -361,12 +363,8 @@ public class ScansList extends Fragment implements AdapterView.OnItemClickListen
                 sYearB=sheetView.findViewById(R.id.dropBoxYearB);
                 sMonthB=sheetView.findViewById(R.id.dropBoxMonthB);
                 sDayB=sheetView.findViewById(R.id.dropBoxDayB);
-                factureField=sheetView.findViewById(R.id.invoiceField);
-                factureField.getEditText().setText(invoicesList.getFilterFacture());
-                magasinField=sheetView.findViewById(R.id.shopField);
-                magasinField.getEditText().setText(invoicesList.getFilterMagasin());
-                clientField=sheetView.findViewById(R.id.clientField);
-                clientField.getEditText().setText(invoicesList.getFilterClient());
+                routeField = sheetView.findViewById(R.id.routeField);
+                routeField .getEditText().setText(chargementList.getFilterRoute());
                 setDatesListsA();
                 sDayA.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                                  @Override
@@ -455,43 +453,24 @@ public class ScansList extends Fragment implements AdapterView.OnItemClickListen
                         Log.v("search","search");
                         String date_A=""+(selected_dayA+1)+"/"+(selected_monthA+1)+"/"+(thisYear-selected_yearA);
                         String date_B=""+(selected_dayB+1)+"/"+(selected_monthB+1)+"/"+(thisYear-selected_yearB);
-                        String facture =factureField.getEditText().getText().toString();
-                        String magasin =magasinField.getEditText().getText().toString();
-                        String client =clientField.getEditText().getText().toString();
+                        String route =routeField.getEditText().getText().toString();
                         Log.v("After",date_A);
                         Log.v("Before",date_B);
-                        Log.v("facture",facture);
-                        Log.v("magasin",magasin);
-                        Log.v("client",client);
-                        invoicesList.setFilters(date_B,date_A,facture,magasin,client);
-
+                        Log.v("Route",route);
+                        chargementList.setFilters(date_B,date_A,route);
                         dialog.hide();
 
                     }
                 });
             }
         });
-
         return view;
     }
 
-
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        invoicesList.getItem(i).setDetailed();
-        invoicesList.updateResults();
-        mainActivity.getSupportFragmentManager().beginTransaction().replace(R.id.Fragment, this).commit();
-    }
-    @NonNull
-    @Override
-    public CreationExtras getDefaultViewModelCreationExtras() {
-        return super.getDefaultViewModelCreationExtras();
-    }
-
-    public void setListRequest(ArrayList <Invoice> list) {
+    public void setListRequest(ArrayList <Chargement> list) {
         mainActivity.runOnUiThread( new Runnable() {
             public void run() {
-                invoicesList.setInvoicesArray(list);
+                chargementList.setChargementsArray(list);
             }
         });
 

@@ -69,6 +69,7 @@ public class Settings extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View inflate = inflater.inflate(R.layout.fragment_settings, container, false);
+
         buttonlogout = inflate.findViewById(R.id.logoutButton);
         buttonlogout.setOnClickListener(new View.OnClickListener()
         {

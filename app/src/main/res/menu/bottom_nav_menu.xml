@@ -9,6 +9,15 @@
         android:title="@string/add_scan"
         android:icon="@drawable/ic_baseline_post_add_24"/>
     <item
+    android:id="@+id/chargementsList"
+    android:title="@string/chargements_list"
+    android:icon="@drawable/baseline_delivery_dining_24"/>
+    <item
+    android:id="@+id/addChargement"
+    android:title="@string/add_chargement"
+    android:icon="@drawable/baseline_add_shopping_cart_24"/>
+
+    <item
         android:id="@+id/settings"
         android:title="@string/settings"
         android:icon="@drawable/ic_baseline_settings_24"/>

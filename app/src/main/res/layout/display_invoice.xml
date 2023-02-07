@@ -28,7 +28,7 @@
             android:id="@+id/invoiceText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="100dp"
+            android:layout_marginStart="70dp"
             android:layout_marginTop="10dp"
             android:text="@string/id_invoice"
             android:textSize="16sp"

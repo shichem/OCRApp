@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dip"
-            android:src="@drawable/ic_baseline_article_24" />
+            android:src="@drawable/baseline_send_and_archive_24" />
 
         <TextView
             android:id="@+id/invoiceText"
@@ -28,40 +28,32 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="70dp"
             android:layout_marginTop="10dp"
-            android:text="@string/id_invoice"
+            android:text="@string/rapportchargement"
             android:textSize="16dp"
             android:textStyle="bold" />
 
-        <ImageView
-            android:id="@+id/show_option"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="20dp"
-            android:src="@drawable/ic_baseline_expand_less_24" />
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/magasinText"
+                android:id="@+id/routeText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="40dp"
-                android:text="@string/id_shop"
+                android:text="@string/route"
                 android:textSize="16dp"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/clientText"
+                android:id="@+id/dateText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="40dp"
-                android:text="@string/id_customer"
+                android:text="@string/date"
                 android:textSize="16dp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -75,32 +67,12 @@
 
 
             <TextView
-                android:id="@+id/tVenduText"
+                android:id="@+id/produitsText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="70dp"
-                android:text="@string/t_vendu"
-                android:textSize="16dp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tRetourlientText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="70dp"
-                android:text="@string/t_retour"
-                android:textSize="16dp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/totalText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="70dp"
-                android:text="@string/total"
+                android:layout_marginTop="65dp"
+                android:text="@string/listeProduits"
                 android:textSize="16dp"
                 android:textStyle="bold" />
 
@@ -115,10 +87,10 @@
             <com.google.android.material.button.MaterialButton
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/bttnDownloadPDF"
+                android:id="@+id/bttnRapportPDF"
                 android:layout_marginHorizontal="100dp"
                 android:layout_marginTop="70dp"
-                android:text="@string/donwloadPDF"
+                android:text="@string/bttnRapportPDF"
                 />
         </LinearLayout>
     </RelativeLayout>

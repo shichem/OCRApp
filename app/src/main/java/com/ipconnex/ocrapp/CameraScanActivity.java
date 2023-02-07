@@ -10,8 +10,18 @@ import com.websitebeaver.documentscanner.DocumentScanner;
 import com.websitebeaver.documentscanner.constants.ResponseType;
 
 public class CameraScanActivity extends AppCompatActivity {
-
+    public static final int SEND_FACTURE=0,SEND_CHARGEMENT=1;
+    private static int type=0;
     private ImageView croppedImageView;
+
+    public static void setType(int type) {
+        CameraScanActivity.type = type;
+    }
+
+    public static int getType() {
+        return type;
+    }
+
     DocumentScanner documentScanner = new DocumentScanner(
             this,
             (croppedImageResults) -> {
@@ -21,13 +31,28 @@ public class CameraScanActivity extends AppCompatActivity {
                         BitmapFactory.decodeFile(croppedImageResults.get(0))
                 );*/
                 //croppedImageView img json
-                try {
-                    DataManager.sendInvoice(croppedImageResults.get(0));
-                }catch (Exception e){
-                    Log.v("Error",e.getMessage());
+                if(type==CameraScanActivity.SEND_CHARGEMENT){
+                    try {
+                        DataManager.sendRapport(croppedImageResults.get(0));
+                    }catch (Exception e){
+                        Log.v("Error",e.getMessage());
 
-                    DataManager.cancelLoading();
+                        DataManager.cancelLoading();
+                    }
+
+
+
+                }else{
+                    try {
+                        DataManager.sendInvoice(croppedImageResults.get(0));
+                    }catch (Exception e){
+                        Log.v("Error",e.getMessage());
+
+                        DataManager.cancelLoading();
+                    }
+
                 }
+
                 finish();
                 return null;
             },

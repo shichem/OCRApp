@@ -19,7 +19,9 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.ipconnex.ocrapp.databinding.ActivityMainBinding;
+import com.ipconnex.ocrapp.design.AddChargement;
 import com.ipconnex.ocrapp.design.AddScan;
+import com.ipconnex.ocrapp.design.ChargementsList;
 import com.ipconnex.ocrapp.design.ScansList;
 import com.ipconnex.ocrapp.design.Settings;
 import com.websitebeaver.documentscanner.DocumentScanner;
@@ -34,7 +36,9 @@ import android.widget.Toast;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -47,7 +51,10 @@ public class MainActivity extends AppCompatActivity {
 
     public AddScan addScan=new AddScan();
     public ScansList scansList=new ScansList();
+    public AddChargement addChargement=new AddChargement();
+    public ChargementsList chargementsList=new ChargementsList();
     public Settings settings=new Settings();
+
     public BottomNavigationView bottomNavigationView;
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
@@ -93,10 +100,21 @@ public class MainActivity extends AppCompatActivity {
                     switch (item.getItemId()) {
                         case R.id.scan:
                             getSupportFragmentManager().beginTransaction().replace(R.id.Fragment, addScan).commit();
+                            CameraScanActivity.setType(CameraScanActivity.SEND_FACTURE);
                             return true;
 
                         case R.id.scans_list:
                             getSupportFragmentManager().beginTransaction().replace(R.id.Fragment, scansList).commit();
+                            CameraScanActivity.setType(CameraScanActivity.SEND_FACTURE);
+                            return true;
+                        case R.id.addChargement:
+                            getSupportFragmentManager().beginTransaction().replace(R.id.Fragment, addChargement).commit();
+                            CameraScanActivity.setType(CameraScanActivity.SEND_CHARGEMENT);
+                            return true;
+
+                        case R.id.chargementsList:
+                            getSupportFragmentManager().beginTransaction().replace(R.id.Fragment,chargementsList).commit();
+                            CameraScanActivity.setType(CameraScanActivity.SEND_CHARGEMENT);
                             return true;
 
                         case R.id.settings:
@@ -109,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setSelectedItemId(R.id.scan);
         DataManager.setMainActivity(this);
         scansList.setMainActivity(this);
+        chargementsList.setMainActivity(this);
         /*
         // cropped image
 */
@@ -159,7 +178,9 @@ public class MainActivity extends AppCompatActivity {
                             data.getString("id_client"),
                             data.getString("t_vendu"),
                             data.getString("t_retour"),
-                            data.getString("total"));
+                            data.getString("total"),
+                            data.getString("qte"),
+                            data.getString("date"));
                     /* String image = jInvoice.getString("image") ; */
 
                 }catch (Exception e){
@@ -172,27 +193,71 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+    public void setRecivedRapport(String json) {
+        runOnUiThread( new Runnable() {
+            public void run() {
 
+                try{
+                    JSONObject data = new JSONObject(json);
+                    addChargement.setData(data.getString("image")
+                            ,data.getString("route"),
+                            data.getString("date"),
+                            data.getString("liste_produits"));
+
+                }catch (Exception e){
+                    //parsing error
+
+                }
+
+
+            }
+        });
+    }
     public void startToast(String message) {
         MainActivity m = this ;
         runOnUiThread( new Runnable() {
             public void run() {
-                Toast.makeText(m, message ,Toast.LENGTH_SHORT).show();
+                Toast.makeText(m, message ,Toast.LENGTH_LONG).show();
 
             }
         });
     }
+
     public void clearData() {
 
         runOnUiThread( new Runnable() {
             public void run() {
-                addScan.setData("","","","","","","");
-                bottomNavigationView.setSelectedItemId(R.id.scans_list);
+                Date date = new Date();
+                SimpleDateFormat year_formatter = new SimpleDateFormat("yyyy");
+                Integer thisYear = new Integer(year_formatter.format(date));
+
+
+                if(CameraScanActivity.getType()==CameraScanActivity.SEND_FACTURE){
+
+                    addScan.setData("","","","","","","","","");
+                    bottomNavigationView.setSelectedItemId(R.id.scans_list);
+                }
+                if(CameraScanActivity.getType()==CameraScanActivity.SEND_CHARGEMENT){
+                    addChargement.setData("","","01/01/"+thisYear,"");
+                    bottomNavigationView.setSelectedItemId(R.id.chargementsList);
+                }
             }
         });
 
     }
 
+    public void setChargementIsEnabled(boolean b) {
+
+
+        runOnUiThread( new Runnable() {
+            public void run() {
+                addChargement.setIsEnabled(b);
+            }
+
+        });
+
+
+    }
     public void setAddScanIsEnabled(boolean b) {
 
 
@@ -205,4 +270,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+
 }

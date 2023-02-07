@@ -7,6 +7,7 @@ import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -31,12 +32,16 @@ public class LoginActivity extends AppCompatActivity {
         user =findViewById(R.id.userField);
         password =findViewById(R.id.passewordField);
         loginButton =findViewById(R.id.loginButton);
+        user.getEditText().setText("api@ipconnex.com");
+        password.getEditText().setText("Transat05**");
+
         SharedPreferences.Editor Ed=sp.edit();
         DataManager.setLoginActivity(this);
         DataManager.setActivateLogin(false);
         String usr = sp.getString(DataManager.USERNAME,"");
         String mdp = sp.getString(DataManager.PASSWORD,"");
-        if(usr!="" && mdp!=""){
+        String sid = sp.getString(DataManager.SESSIONID,"");
+        if(usr!="" && mdp!="" && sid!=""){
             try {
                 setLoginIsEnabled(false);
                 DataManager.senLogin(usr,mdp);
@@ -112,11 +117,12 @@ public class LoginActivity extends AppCompatActivity {
 
 
     }
-    public void login(String usr, String mdp){
+    public void login(String usr, String mdp,String sid){
         SharedPreferences sp=getSharedPreferences("Login", MODE_PRIVATE);
         SharedPreferences.Editor Ed=sp.edit();
         Ed.putString(DataManager.USERNAME,usr);
         Ed.putString(DataManager.PASSWORD,mdp);
+        Ed.putString(DataManager.SESSIONID,sid);
         Ed.apply();
         Intent switchActivityIntent = new Intent(this, MainActivity.class);
         startActivity(switchActivityIntent);

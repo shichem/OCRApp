@@ -12,8 +12,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -22,7 +26,10 @@ import com.ipconnex.ocrapp.DataManager;
 import com.ipconnex.ocrapp.R;
 import com.websitebeaver.documentscanner.DocumentScanner;
 
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -39,23 +46,171 @@ public class AddScan extends Fragment {
     private TextInputLayout input_facture;
     private TextInputLayout input_client;
     private TextInputLayout input_magasin;
+    private TextInputLayout input_qte;
     private TextInputLayout input_t_vendu;
     private TextInputLayout input_t_retour;
     private TextInputLayout input_total;
     private Intent intent;
     private View buttonSendInv ;
     private View buttonStartCam;
+    private String[] options_days;
+    private String[] options_month;
+    private String[] options_years;
+    private int selected_day=0,selected_month=0,selected_year=0;
+    private AutoCompleteTextView sYear,sMonth,sDay;
+    Date date = new Date();
+    SimpleDateFormat year_formatter = new SimpleDateFormat("yyyy");
+    private Integer thisYear = new Integer(year_formatter.format(date));
+    public void setDatesLists(){
+        date = new Date();
+        thisYear = new Integer(year_formatter.format(date));
+        options_years=new String[5] ;
+        DecimalFormat formatter = new DecimalFormat("00");
+        for ( int i=0; i<5;i++){
+            options_years[i]=""+(thisYear-i);
+        }
+        options_month=new String[12] ;
+        for ( int i=0; i<12;i++){
+            options_month[i]=formatter.format(i+1);
+        }
+        if(selected_month==3 || selected_month==5|| selected_month==8|| selected_month==10){
+            // months with 30 days
+            options_days=new String[30] ;
+            for ( int i=0; i<30;i++){
+                options_days[i]=formatter.format(i+1);
+            }
 
-    public void setData(String img , String facture ,String magasin ,String client,String t_vendu ,String t_retour ,String total ){
+        }else{
+            if(selected_month==1){
+                // february
+                if((thisYear-selected_year)%4==0){ // 29 days
+                    options_days=new String[29] ;
+                    for ( int i=0; i<29;i++){
+                        options_days[i]=formatter.format(i+1);
+                    }
+
+                }else{ //28 days
+                    options_days=new String[28] ;
+                    for ( int i=0; i<28;i++){
+                        options_days[i]=formatter.format(i+1);
+                    }
+
+                }
+            }else{ // months with 31 days
+                options_days=new String[31] ;
+                for ( int i=0; i<31;i++){
+                    options_days[i]=formatter.format(i+1);
+                }
+
+
+            }
+
+        }
+
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+                R.layout.drop_down_items,options_days);
+        sDay.setAdapter(adapter);
+        if(selected_day>=options_days.length){
+            selected_day=0;
+        }
+        sDay.setText(sDay.getAdapter().getItem(selected_day).toString(), false);
+        adapter = new ArrayAdapter<String>(getActivity(),
+                R.layout.drop_down_items,options_month);
+        sMonth.setAdapter(adapter);
+
+        sMonth.setText(sMonth.getAdapter().getItem(selected_month).toString(), false);
+        adapter = new ArrayAdapter<String>(getActivity(),
+                R.layout.drop_down_items,options_years);
+        sYear.setAdapter(adapter);
+
+        sYear.setText(sYear.getAdapter().getItem(selected_year).toString(), false);
+
+    }
+    public void setDaysList(){
+        DecimalFormat formatter = new DecimalFormat("00");
+        if(selected_month==3 || selected_month==5|| selected_month==8|| selected_month==10){
+            // months with 30 days
+            options_days=new String[30] ;
+            for ( int i=0; i<30;i++){
+                options_days[i]=formatter.format(i+1);
+            }
+
+        }else{
+            if(selected_month==1){
+                // february
+                if((thisYear-selected_year)%4==0){ // 29 days
+                    options_days=new String[29] ;
+                    for ( int i=0; i<29;i++){
+                        options_days[i]=formatter.format(i+1);
+                    }
+
+                }else{ //28 days
+                    options_days=new String[28] ;
+                    for ( int i=0; i<28;i++){
+                        options_days[i]=formatter.format(i+1);
+                    }
+
+                }
+            }else{ // months with 31 days
+                options_days=new String[31] ;
+                for ( int i=0; i<31;i++){
+                    options_days[i]=formatter.format(i+1);
+                }
+
+
+            }
+
+        }
+
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+                R.layout.drop_down_items,options_days);
+        sDay.setAdapter(adapter);
+        if(selected_day>=options_days.length){
+            selected_day=0;
+        }
+        sDay.setText(sDay.getAdapter().getItem(selected_day).toString(), false);
+    }
+
+
+
+    public void setData(String img , String facture ,String magasin ,String client,String t_vendu ,String t_retour ,String total, String qte ,String date ){
 
         this.image = img ;
         Log.v(magasin ,img+" "+facture);
         this.input_facture.getEditText().setText(facture);
         this.input_client.getEditText().setText(client);
         this.input_magasin.getEditText().setText(magasin);
+        this.input_qte.getEditText().setText(qte);
         this.input_t_vendu.getEditText().setText(t_vendu);
         this.input_t_retour.getEditText().setText(t_retour);
         this.input_total.getEditText().setText(total);
+        if(date.split("/").length==3){
+
+            try{
+                int a= Integer.parseInt(date.split("/")[1])-1;
+                sMonth.setText(sMonth.getAdapter().getItem(a).toString(), false);
+                selected_month=a;
+            }catch(Exception e){
+
+            }
+            try{
+                int a=thisYear-Integer.parseInt(date.split("/")[2]);
+                sYear.setText(sYear.getAdapter().getItem(a).toString(), false);
+                selected_year=a;
+            }catch(Exception e){
+
+            }
+            try{
+                int a= Integer.parseInt(date.split("/")[0])-1;
+                sDay.setText(sDay.getAdapter().getItem(a).toString(), false);
+                selected_day =a;
+            }catch(Exception e){
+
+            }
+        }
+
         setIsEnabled(true);
     }
 
@@ -66,6 +221,7 @@ public class AddScan extends Fragment {
         result.add(input_facture.getEditText().getText().toString());
         result.add(input_magasin.getEditText().getText().toString());
         result.add(input_client.getEditText().getText().toString());
+        result.add(input_qte.getEditText().getText().toString());
         result.add(input_t_vendu.getEditText().getText().toString());
         result.add(input_t_retour.getEditText().getText().toString());
         result.add(input_total.getEditText().getText().toString());
@@ -80,14 +236,6 @@ public class AddScan extends Fragment {
 
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment add_scan.
-     */
     // TODO: Rename and change types and number of parameters
     public static AddScan newInstance(String param1, String param2) {
         AddScan fragment = new AddScan();
@@ -121,7 +269,51 @@ public class AddScan extends Fragment {
         input_t_vendu= (TextInputLayout)  inflate.findViewById(R.id.venduField);
         input_t_retour= (TextInputLayout)  inflate.findViewById(R.id.retourField);
         input_total= (TextInputLayout)  inflate.findViewById(R.id.totalField);
+        input_qte=(TextInputLayout) inflate.findViewById(R.id.qteField);
         intent= new Intent(getActivity(), CameraScanActivity.class);
+
+
+        sDay=inflate.findViewById(R.id.dropBoxDay);
+        sMonth=inflate.findViewById(R.id.dropBoxMonth);
+        sYear=inflate.findViewById(R.id.dropBoxYear);
+        setDatesLists();
+        sDay.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                 @Override
+                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                     Log.v("Day ",""+i );
+                     selected_day=i;
+                 }
+             }
+
+        );
+
+        sDay.setText(sDay.getAdapter().getItem(selected_day).toString(), false);
+        sMonth.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                          @Override
+                                          public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                              Log.v("month ",""+i );
+                                              selected_month=i;
+                                              setDaysList();
+                                          }
+                                      }
+
+        );
+        sMonth.setText(sMonth.getAdapter().getItem(selected_month).toString(), false);
+
+
+
+
+        sYear.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                        @Override
+                                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                            Log.v("Year ",""+i );
+                                            selected_year=i;
+                                            setDaysList();
+                                        }
+                                    }
+
+        );
+        sYear.setText(sYear.getAdapter().getItem(selected_year).toString(), false);
 
         // TODO set Editable false
         setIsEnabled(true);
@@ -135,14 +327,19 @@ public class AddScan extends Fragment {
                 String image= data.get(0);
                 String facture= data.get(1);
                 String magasin= data.get(2);
-                String client= data.get(3);
-                String t_retour= data.get(4);
-                String t_vendu= data.get(5);
-                String total= data.get(6);
+                String date_facture=""+(selected_day+1)+"/"+(selected_month+1)+"/"+(thisYear-selected_year);
+                Log.v("date facturation",date_facture);
+                String qte=data.get(3);
+                String client= data.get(4);
+                String t_retour= data.get(5);
+                String t_vendu= data.get(6);
+                String total= data.get(7);
+
                 try{
                     setIsEnabled(false);
-                    DataManager.sendForm(image,facture,magasin,client,t_vendu,t_retour,total);
+                    DataManager.sendForm(image,facture,magasin,client,date_facture,qte,t_vendu,t_retour,total);
                 }catch (Exception e ){
+
                 }
             }
         });
@@ -151,9 +348,8 @@ public class AddScan extends Fragment {
             @Override
             public void onClick(View v)
             {
-                // TODO set Editable false
+                CameraScanActivity.setType(CameraScanActivity.SEND_FACTURE);
                 setIsEnabled(false);
-                // TODO start new Activity
                 startActivity(intent);
             }
         });
@@ -163,11 +359,15 @@ public class AddScan extends Fragment {
         input_facture.setEnabled(b);
         input_client.setEnabled(b);
         input_magasin.setEnabled(b);
+        input_qte.setEnabled(b);
         input_t_vendu.setEnabled(b);
         input_t_retour.setEnabled(b);
         input_total.setEnabled(b);
         buttonStartCam.setEnabled(b);
         buttonSendInv.setEnabled(b);
+        sDay.setEnabled(b);
+        sMonth.setEnabled(b);
+        sYear.setEnabled(b);
 
     }
 }

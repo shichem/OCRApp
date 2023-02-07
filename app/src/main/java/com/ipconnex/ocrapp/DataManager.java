@@ -1,11 +1,15 @@
 package com.ipconnex.ocrapp;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.ipconnex.ocrapp.model.Chargement;
 import com.ipconnex.ocrapp.model.Invoice;
 
 import org.json.JSONArray;
@@ -15,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.Exception;
 import java.util.ArrayList;
+import java.util.List;
 
 
 import okhttp3.Call;
@@ -34,12 +39,22 @@ public class DataManager {
     private static LoginActivity loginActivity;
     private static  final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private static final MediaType MEDIA_TYPE = MediaType.parse("image");
-    private static final String URL_FACTURES = "https://ocr-api.ipconnex.com/api/factures/";
-    private static final String URL_CAPTURES= "https://ocr-api.ipconnex.com/api/captures/";
-    private static String URL_LOGIN="https://ipconnex2.frappe.cloud/api/method/login";
+    private static String URL_API="https://ipconnex2.frappe.cloud/api";
 
+    private static String URL_LOGIN=URL_API+"/method/login";
+    private static String URL_CHARGEMENT=URL_API+"/resource/RapportChargement";
+    private static String URL_LISTCHARGEMENTS=URL_API+"/resource/RapportChargement?fields=[\"route_id\",\"date\",\"products_list\",\"image\"]";
+
+    private static String URL_FACTURE="https://ipconnex2.frappe.cloud/api/resource/Facture";
+
+    private static String URL_LISTFACTURES="https://ipconnex2.frappe.cloud/api/resource/Facture?fields=[\"num_client\",\"num_magazin\",\"num_facture\",\"total\",\"total_vendu\",\"total_retour\",\"scan_facture\",\"qte\",\"date_facture\"]";
+
+    private static final String URL_CAPTURES= "https://ocr-api.ipconnex.com/api/captures/";
+    private static final String URL_RAPPORTS= "https://ocr-api.ipconnex.com/api/chargement/";
+    private static String image_path ="";
     public static String USERNAME="username";
     public static String PASSWORD="password";
+    public static String SESSIONID="sid";
     public static void setLoginActivity(LoginActivity loginActivity) {
         DataManager.loginActivity = loginActivity;
     }
@@ -76,15 +91,16 @@ public class DataManager {
                     public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                         //loginActivity.startToast(response.toString());
 
-                        if(response.code()==200 || username.compareTo("admin")==0){
 
-                            loginActivity.login(username, password);
+                        if(response.code()==200 ){
+                            List<String> Cookielist = response.headers().values("Set-Cookie");
+                            String jsessionid = (Cookielist .get(0).split(";"))[0];
+                            Log.v("Session",jsessionid);
+                            loginActivity.login(username, password,jsessionid);
                         }else{
-
                             loginActivity.setLoginIsEnabled(true);
                             loginActivity.startToast("Données de connection erronées ");
                         }
-
 
                     }
                 }
@@ -94,9 +110,14 @@ public class DataManager {
 
     }
     public static void getInvoices () throws Exception {
+        SharedPreferences sp=mainActivity.getSharedPreferences("Login", mainActivity.MODE_PRIVATE);
+        String sid = sp.getString(DataManager.SESSIONID,"");
+
         OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url(URL_FACTURES)
+        Request request = new Request.Builder().addHeader( "Content-Type", "multipart/form-data")
+                .addHeader("Authorization", "Bearer "+sid)
+                .addHeader("Cookie", "full_name=API;"+sid+"; system_user=yes; user_id=api%40ipconnex.com; user_image=")
+                .url(URL_LISTFACTURES)
                 .build();
         client.newCall(request).enqueue(
                 new Callback() {
@@ -109,18 +130,24 @@ public class DataManager {
                     public void onResponse(@NonNull Call call, @NonNull Response response) {
                         try{
                             String s = response.body().string();
-                            JSONArray json = new JSONArray(s);
+                            Log.v("response",s);
+                            JSONObject json = new JSONObject(s);
+                            JSONArray data = new JSONArray(json.getString("data"));
+                            Log.v("data",data.toString());
                             ArrayList<Invoice> list = new ArrayList<Invoice>();
-                            for(int i=json.length()-1; i >=0 ;i--){
-                                JSONObject jInvoice = new JSONObject(json.get(i).toString());
-                                String image = jInvoice.getString("image") ;
-                                String numFacture = jInvoice.getString("id_facture") ;
-                                String numMagasin = jInvoice.getString("id_magasin") ;
-                                String numClient = jInvoice.getString("id_client") ;
-                                String t_vendu = jInvoice.getString("t_vendu") ;
-                                String t_retour = jInvoice.getString("t_retour") ;
+                            for(int i=0; i <data.length() ;i++){
+                                JSONObject jInvoice = new JSONObject(data.get(i).toString());//"num_client","num_magazin","num_facture","total","total_vendu","total_retour","scan_facture"
+                                String image = jInvoice.getString("scan_facture") ;
+                                Log.v("image",image);
+                                String numFacture = jInvoice.getString("num_facture") ;
+                                String numMagasin = jInvoice.getString("num_magazin") ;
+                                String numClient = jInvoice.getString("num_client") ;
+                                String t_vendu = jInvoice.getString("total_vendu") ;
+                                String t_retour = jInvoice.getString("total_retour") ;
                                 String total = jInvoice.getString("total") ;
-                                list.add(new Invoice(image,numFacture,numMagasin,numClient,t_vendu,t_retour,total));
+                                String qte= jInvoice.getString("qte") ;
+                                String date_facture = jInvoice.getString("date_facture") ;
+                                list.add(new Invoice(image,numFacture,numMagasin,numClient,t_vendu,t_retour,total,date_facture,qte));
                             }
                             mainActivity.scansList.setListRequest(list);
 
@@ -143,6 +170,7 @@ public class DataManager {
         Log.v("img path",img_path);
         OkHttpClient client = new OkHttpClient();
         File file= new File(img_path);
+        image_path=img_path;
         RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
                 .addFormDataPart("image", img_path, RequestBody.create(MEDIA_TYPE, file))
                 .build();
@@ -168,6 +196,7 @@ public class DataManager {
                     @Override
                     public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                         String result = response.body().string();
+
                         Log.v("Api Response",result);
                         cameraScanActivity.finish();
                         mainActivity.setRecivedInvoice(result);
@@ -177,22 +206,33 @@ public class DataManager {
 
         );
     }
-    public static void sendForm(String  image, String id_facture,String id_magasin,String id_client,String t_vendu,String t_retour,String total ) throws Exception{
-        String json = "{\r\n" +
-                " \"image\" : \""+image+"\",\r\n" +
-                " \"id_facture\" : \""+id_facture+"\",\r\n" +
-                " \"id_magasin\" : \""+id_magasin+"\",\r\n" +
-                " \"id_client\" : \""+id_client+"\",\r\n" +
-                " \"t_vendu\" : \""+t_vendu+"\",\r\n" +
-                " \"t_retour\" : \""+t_retour+"\",\r\n" +
-                " \"total\" : \""+total+"\"" +
-                "}";
-        RequestBody body= RequestBody.create(JSON, json);
+    public static void sendForm(String  image, String id_facture,String id_magasin,String id_client,String date_facture,String qte ,String t_vendu,String t_retour,String total) throws Exception{
+
+        SharedPreferences sp=mainActivity.getSharedPreferences("Login", mainActivity.MODE_PRIVATE);
+        String sid = sp.getString(DataManager.SESSIONID,"");
+        Log.v("image",image_path);
+
+        RequestBody body= new MultipartBody.Builder().setType(MultipartBody.FORM)
+
+                .addFormDataPart("scan_facture",image)
+                .addFormDataPart("nom_client",id_client)
+                    .addFormDataPart("num_client",id_client)
+                    .addFormDataPart("num_magazin",id_magasin)
+                    .addFormDataPart("num_facture",id_facture)
+                    .addFormDataPart("total",total)
+                    .addFormDataPart("total_vendu",t_vendu)
+                    .addFormDataPart("total_retour",t_retour)
+                    .addFormDataPart("qte",qte)
+                    .addFormDataPart("date_facture",date_facture)
+                    .build();
 
         Request request = new Request.Builder()
-                .url(URL_FACTURES)
+                .url(URL_FACTURE).addHeader( "Content-Type", "multipart/form-data")
+                .addHeader("Authorization", "Bearer "+sid)
+                .addHeader("Cookie", "full_name=API;"+sid+"; system_user=yes; user_id=api%40ipconnex.com; user_image=")
                 .post(body)
                 .build();
+
 
         client.newCall(request).enqueue(
                 new Callback() {
@@ -200,14 +240,20 @@ public class DataManager {
                     public void onFailure(@NonNull Call call, @NonNull IOException e) {
                         mainActivity.startToast( "Erreur de connection ... ");
                         mainActivity.setAddScanIsEnabled(true);
-
+                        mainActivity.clearData();
                     }
 
                     @Override
                     public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                        Log.v("response ",response.toString());
+                        if(response.code()==200){
+                            DataManager.image_path="";
+                            mainActivity.startToast( "Facture ajouté avec succes" );
+                            mainActivity.clearData();
+                        }else{
+                            mainActivity.startToast( "Erreur lors de l'envoi de la facture !" );
 
-                        mainActivity.startToast( "Facture ajouté avec succes" );
-                        mainActivity.clearData();
+                        }
 
                     }
                 }
@@ -216,11 +262,201 @@ public class DataManager {
 
 
     }
+    public static void sendRapport(String img_path) {
+        Log.v("img path",img_path);
+        OkHttpClient client = new OkHttpClient();
+        File file= new File(img_path);
+        image_path=img_path;
+        RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
+                .addFormDataPart("image", img_path, RequestBody.create(MEDIA_TYPE, file))
+                .build();
+
+        Request request = new Request.Builder()
+                .url(URL_RAPPORTS)
+                .addHeader( "Content-Type", "multipart/form-data")
+                .addHeader("Content-Type",
+                        "application/json; charset=utf-8"
+                )
+                .post(requestBody)
+                .build();
+        Log.v("Api Res","Connecting to api ! ... ");
+
+        client.newCall(request).enqueue(
+                new Callback() {
+                    @Override
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                        Log.v("Api Error",e.getMessage());
+                        mainActivity.setChargementIsEnabled(true);
+                    }
+
+                    @Override
+                    public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                        String result = response.body().string();
+
+                        Log.v("Api Response",result);
+                        cameraScanActivity.finish();
+                        mainActivity.setRecivedRapport(result);
+                        mainActivity.setChargementIsEnabled(true);
+                    }
+                }
+
+        );
+    }
+    public static void sendChargement(String  route_id, String date,String products_list,String image) throws Exception{
+
+        SharedPreferences sp=mainActivity.getSharedPreferences("Login", mainActivity.MODE_PRIVATE);
+        String sid = sp.getString(DataManager.SESSIONID,"");
+        String num_facture="245793";
+        RequestBody body= new MultipartBody.Builder().setType(MultipartBody.FORM)
+                .addFormDataPart("route_id",route_id)
+                .addFormDataPart("date",date)
+                .addFormDataPart("products_list",products_list)
+                .addFormDataPart("image",image)
+                .build();
+        Log.v("URL_CHARGEMENT",URL_CHARGEMENT);
+        Request request = new Request.Builder()
+                .url(URL_CHARGEMENT).addHeader( "Content-Type", "multipart/form-data")
+                .addHeader("Authorization", "Bearer "+sid)
+                .addHeader("Cookie", "full_name=API;"+sid+"; system_user=yes; user_id=api%40ipconnex.com; user_image=")
+                .post(body)
+                .build();
+
+
+        client.newCall(request).enqueue(
+                new Callback() {
+                    @Override
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                        mainActivity.startToast("Erreur de connection ");
+                        Log.v("error", e.getMessage());
+                    }
+
+                    @Override
+                    public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                        Log.v("",""+response.body().string()+" "+(response.code()==200));
+                        if(response.code()==200){
+                            DataManager.image_path="";
+                            mainActivity.startToast( "Facture ajouté avec succes" );
+                            Log.v("Success", "Success\"Success\"\"Success\"\"Success\"\"Success\"");
+                            mainActivity.clearData();
+                        }else{
+                            mainActivity.startToast( "Erreur lors de l'envoi de la facture !"+response.code() );
+
+                        }
+
+                    }
+                }
+
+        );
+        /*
+        client.newCall(request).enqueue(
+                new Callback() {
+                    @Override
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                        mainActivity.startToast( "Erreur de connection ... ");
+                        mainActivity.setAddScanIsEnabled(true);
+                        mainActivity.clearData();
+                    }
+
+                    @Override
+                    public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                        Log.v("response ",response.toString());
+                        if(response.code()==200){
+                            DataManager.image_path="";
+                            mainActivity.startToast( "Facture ajouté avec succes" );
+                            mainActivity.clearData();
+                        }else{
+                            mainActivity.startToast( "Erreur lors de l'envoi de la facture !" );
+
+                        }
+
+                    }
+                }
+
+        );*/
+
+
+    }
+    public static void getChargements () throws Exception {
+
+        SharedPreferences sp=mainActivity.getSharedPreferences("Login", mainActivity.MODE_PRIVATE);
+        String sid = sp.getString(DataManager.SESSIONID,"");
+        MediaType mediaType = MediaType.parse("text/plain");
+        RequestBody body = RequestBody.create(mediaType, "");
+        Request request = new Request.Builder()
+                .url(URL_LISTCHARGEMENTS)
+                .get()
+                .addHeader("Authorization", "Bearer "+sid)
+                .addHeader("Cookie", "full_name=API;"+sid+"; system_user=yes; user_id=api%40ipconnex.com; user_image=")
+                .build();
+        client.newCall(request).enqueue(
+                new Callback() {
+                    @Override
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+
+                        mainActivity.startToast("Erreur de connection ... ");
+                    }
+
+                    @Override
+                    public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                        try{
+                            String s = response.body().string();
+                            Log.v("response",s);
+                            JSONObject json = new JSONObject(s);
+                            JSONArray data = new JSONArray(json.getString("data"));
+                            Log.v("data",data.toString());
+                            ArrayList<Chargement> list = new ArrayList<Chargement>();
+                            for(int i=0; i <data.length() ;i++){
+                                JSONObject jInvoice = new JSONObject(data.get(i).toString());
+                                String route = jInvoice.getString("route_id") ;
+                                String date= jInvoice.getString("date") ;
+                                String produits = jInvoice.getString("products_list") ;
+                                String image = jInvoice.getString("image") ;
+                                list.add(new Chargement(date,route,produits,image));
+                            }
+                            mainActivity.chargementsList.setListRequest(list);
+
+
+                        }catch (Exception e){
+                            mainActivity.startToast("Erreur du serveur ... ");
+
+
+                        }
+
+
+
+
+                    }
+                }
+
+        );
+
+    }
+
+
     public static void cancelLoading(){
-        mainActivity.setAddScanIsEnabled(true);
+
+        if(cameraScanActivity == null){
+            return ;
+
+        }
+        if(cameraScanActivity.getType()== CameraScanActivity.SEND_CHARGEMENT){
+            mainActivity.setChargementIsEnabled(true);
+        }else{
+            mainActivity.setAddScanIsEnabled(true);
+        }
     }
 
     public static void setActivateLogin(boolean b) {
         loginActivity.setLoginIsEnabled(b);
+    }
+
+    public static MainActivity getMainActivity() {
+        return mainActivity;
+    }
+
+    public static void runURL(String url) {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        mainActivity.startActivity(browserIntent);
+
     }
 }

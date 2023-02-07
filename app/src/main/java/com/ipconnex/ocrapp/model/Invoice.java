@@ -10,8 +10,9 @@ public class Invoice {
     private String t_retour;
     private String total;
     private boolean isDetailed=false;
+    String date,qte;
 
-    public Invoice(String captureImgUrl, String facture, String magasin, String client, String t_vendu, String t_retour, String total) {
+    public Invoice(String captureImgUrl, String facture, String magasin, String client, String t_vendu, String t_retour, String total,String date,String qte) {
         this.captureImgUrl = captureImgUrl;
         this.facture = facture;
         this.magasin = magasin;
@@ -19,6 +20,8 @@ public class Invoice {
         this.t_vendu = t_vendu;
         this.t_retour = t_retour;
         this.total = total;
+        this.date = date;
+        this.qte = qte;
     }
 
     public void setCaptureImgUrl(String captureImgUrl) {
@@ -47,6 +50,22 @@ public class Invoice {
 
     public void setTotal(String total) {
         this.total = total;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public String getQte() {
+        return qte;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public void setQte(String qte) {
+        this.qte = qte;
     }
 
     public void setDetailed() {
@@ -86,5 +105,9 @@ public class Invoice {
 
     public boolean isDetailed() {
         return isDetailed;
+    }
+
+    public boolean verify(String date_before,String date_after,String facture ,String magasin ,String client ){
+        return this.facture.startsWith(facture) && this.magasin.startsWith(magasin) && this.client.startsWith(client) && CompareAttributes.compareDates(date_before,this.date) && CompareAttributes.compareDates(this.date,date_after);
     }
 }
