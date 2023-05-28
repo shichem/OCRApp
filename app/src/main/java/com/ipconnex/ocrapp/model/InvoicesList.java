@@ -99,8 +99,9 @@ public class InvoicesList extends BaseAdapter {
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         Invoice inv = invoicesArray.get(i);
+        Log.v("Verif",""+inv.verify(filterDateA,filterDateB,filterFacture,filterMagasin,filterClient));
         if(!inv.verify(filterDateA,filterDateB,filterFacture,filterMagasin,filterClient)){
-            return new View(view.getContext());
+            return new View(viewGroup.getContext());
         }
         if(inv.isDetailed()){
             view = LayoutInflater.from(context).inflate(R.layout.display_invoice_detailed,viewGroup,false) ;

@@ -5,7 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 public class CompareAttributes {
-    private static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
     public static boolean compareDates(String lower,String grater){
         if(lower.compareTo("")==0 || grater.compareTo("")==0 ) return true;
 

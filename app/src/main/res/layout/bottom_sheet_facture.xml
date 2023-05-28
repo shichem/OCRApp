@@ -23,6 +23,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/after"
+                android:layout_marginTop="80dp"
                 android:gravity="center_horizontal"
                 android:layout_gravity="center_horizontal"
                 >
@@ -35,7 +36,7 @@
                 android:layout_marginHorizontal="20dp"
                 android:layout_gravity="end"
                 android:layout_marginEnd="20dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="100dp"
                 android:hint="@string/year"
                 app:helperTextEnabled="true"
                 >
@@ -56,7 +57,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="100dp"
                 android:hint="@string/day"
                 app:helperTextEnabled="true"
                 android:weightSum="1"
@@ -76,7 +77,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="100dp"
                 android:hint="@string/month"
                 app:helperTextEnabled="true"
                 android:weightSum="1"
@@ -89,16 +90,15 @@
                     android:inputType="none"
                     />
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center_horizontal"
+                    android:text="@string/before"></TextView>
+
             </com.google.android.material.textfield.TextInputLayout>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/before"
-                android:gravity="center_horizontal"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="100dp"
-                >
-            </TextView>
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
@@ -107,7 +107,7 @@
                 android:layout_marginHorizontal="20dp"
                 android:layout_gravity="end"
                 android:layout_marginEnd="20dp"
-                android:layout_marginTop="120dp"
+                android:layout_marginTop="180dp"
                 android:hint="@string/year"
                 app:helperTextEnabled="true"
                 >
@@ -128,7 +128,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="120dp"
+                android:layout_marginTop="180dp"
                 android:hint="@string/day"
                 app:helperTextEnabled="true"
                 android:weightSum="1"
@@ -148,7 +148,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="120dp"
+                android:layout_marginTop="180dp"
                 android:hint="@string/month"
                 app:helperTextEnabled="true"
                 android:weightSum="1"
@@ -168,7 +168,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="200dp"
+                android:layout_marginTop="260dp"
                 app:boxCornerRadiusBottomEnd="20dp"
 
                 android:hint="@string/id_invoice">
@@ -185,7 +185,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="270dp"
+                android:layout_marginTop="340dp"
                 app:boxCornerRadiusBottomEnd="20dp"
 
                 android:hint="@string/id_shop">
@@ -202,7 +202,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="340dp"
+                android:layout_marginTop="420dp"
                 app:boxCornerRadiusBottomEnd="20dp"
 
                 android:hint="@string/id_customer">
@@ -220,7 +220,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="120dp"
-                android:layout_marginTop="420dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginBottom="40dp"
                 android:clickable="true"
                 android:text="@string/ok" />

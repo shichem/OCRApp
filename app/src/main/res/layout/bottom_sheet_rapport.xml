@@ -18,11 +18,22 @@
             android:orientation="vertical"
             android:paddingVertical="50dp"
             app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+            <Button
+                android:id="@+id/validateSearch"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="120dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="40dp"
+                android:clickable="true"
+                android:text="@string/ok" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/after"
+                android:layout_marginTop="100dp"
                 android:gravity="center_horizontal"
                 android:layout_gravity="center_horizontal"
                 >
@@ -35,7 +46,7 @@
                 android:layout_marginHorizontal="20dp"
                 android:layout_gravity="end"
                 android:layout_marginEnd="20dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="120dp"
                 android:hint="@string/year"
                 app:helperTextEnabled="true"
                 >
@@ -56,7 +67,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="120dp"
                 android:hint="@string/day"
                 app:helperTextEnabled="true"
                 android:weightSum="1"
@@ -76,7 +87,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="120dp"
                 android:hint="@string/month"
                 app:helperTextEnabled="true"
                 android:weightSum="1"
@@ -96,7 +107,7 @@
                 android:text="@string/before"
                 android:gravity="center_horizontal"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="100dp"
+                android:layout_marginTop="200dp"
                 >
             </TextView>
 
@@ -107,7 +118,7 @@
                 android:layout_marginHorizontal="20dp"
                 android:layout_gravity="end"
                 android:layout_marginEnd="20dp"
-                android:layout_marginTop="120dp"
+                android:layout_marginTop="220dp"
                 android:hint="@string/year"
                 app:helperTextEnabled="true"
                 >
@@ -128,7 +139,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="120dp"
+                android:layout_marginTop="220dp"
                 android:hint="@string/day"
                 app:helperTextEnabled="true"
                 android:weightSum="1"
@@ -148,7 +159,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="120dp"
+                android:layout_marginTop="220dp"
                 android:hint="@string/month"
                 app:helperTextEnabled="true"
                 android:weightSum="1"
@@ -168,7 +179,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="200dp"
+                android:layout_marginTop="300dp"
                 app:boxCornerRadiusBottomEnd="20dp"
 
                 android:hint="@string/route">
@@ -180,16 +191,7 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <Button
-                android:id="@+id/validateSearch"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="120dp"
-                android:layout_marginTop="280dp"
-                android:layout_marginBottom="40dp"
-                android:clickable="true"
-                android:text="@string/ok" />
+
 
         </FrameLayout>
     </ScrollView>

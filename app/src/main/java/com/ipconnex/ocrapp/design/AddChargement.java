@@ -1,6 +1,8 @@
 package com.ipconnex.ocrapp.design;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -43,13 +45,14 @@ public class AddChargement extends Fragment {
     private String[] options_month;
     private String[] options_years;
     private int selected_day=0,selected_month=0,selected_year=0;
-    private AutoCompleteTextView sYear,sMonth,sDay,itemInput;
+    private AutoCompleteTextView sYear,sMonth,sDay,itemInput,itemRout;
     Date date = new Date();
     SimpleDateFormat year_formatter = new SimpleDateFormat("yyyy");
     private Integer thisYear = new Integer(year_formatter.format(date));
     private Button supprimer,ajouter,valider;
     private Button startCamera;
     private TextInputLayout routeInput;
+    private TextInputLayout imageStatus;
 
     private Intent intent;
     private boolean listContains(String s){
@@ -61,6 +64,7 @@ public class AddChargement extends Fragment {
     }
 
     public void setDatesLists(){
+
         date = new Date();
         thisYear = new Integer(year_formatter.format(date));
         options_years=new String[5] ;
@@ -107,24 +111,26 @@ public class AddChargement extends Fragment {
         }
 
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+        ArrayAdapter<String> adapterD = new ArrayAdapter<String>(getActivity(),
                 R.layout.drop_down_items,options_days);
-        sDay.setAdapter(adapter);
+        sDay.setAdapter(adapterD);
+        sDay.setThreshold(adapterD.getCount());
         if(selected_day>=options_days.length){
             selected_day=0;
         }
         sDay.setText(sDay.getAdapter().getItem(selected_day).toString(), false);
-        adapter = new ArrayAdapter<String>(getActivity(),
+        ArrayAdapter<String> adapterM = new ArrayAdapter<String>(getActivity(),
                 R.layout.drop_down_items,options_month);
-        sMonth.setAdapter(adapter);
+
+        sMonth.setAdapter(adapterM);
+        sMonth.setThreshold(adapterM.getCount());
 
         sMonth.setText(sMonth.getAdapter().getItem(selected_month).toString(), false);
-        adapter = new ArrayAdapter<String>(getActivity(),
+        ArrayAdapter<String> adapterY = new ArrayAdapter<String>(getActivity(),
                 R.layout.drop_down_items,options_years);
-        sYear.setAdapter(adapter);
-
+        sYear.setAdapter(adapterY);
+        sYear.setThreshold(adapterY.getCount());
         sYear.setText(sYear.getAdapter().getItem(selected_year).toString(), false);
-
     }
     public void setDaysList(){
         DecimalFormat formatter = new DecimalFormat("00");
@@ -165,7 +171,9 @@ public class AddChargement extends Fragment {
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
                 R.layout.drop_down_items,options_days);
+
         sDay.setAdapter(adapter);
+        sDay.setThreshold(adapter.getCount());
         if(selected_day>=options_days.length){
             selected_day=0;
         }
@@ -216,7 +224,6 @@ public class AddChargement extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View f = inflater.inflate(R.layout.fragment_add_chargement, container, false);
         ajouter = f.findViewById(R.id.ajouter);
         supprimer= f.findViewById(R.id.supprimer);
@@ -224,13 +231,31 @@ public class AddChargement extends Fragment {
         startCamera=f.findViewById(R.id.startCamera);
         routeInput=f.findViewById(R.id.routeField);
         itemInput=f.findViewById(R.id.dropBox);
+        itemRout=f.findViewById(R.id.dropBoxRoute);
+        imageStatus=f.findViewById(R.id.imageStatus);
         AutoCompleteTextView dropList = f.findViewById(R.id.dropBox);
         intent= new Intent(getActivity(), CameraScanActivity.class);
         data = new ArrayList<>();
+        ArrayList <String>routes = new ArrayList<>();
+
+        SharedPreferences sp= getActivity().getSharedPreferences("Login", Context.MODE_PRIVATE);
+        String r= sp.getString(DataManager.ROUTE,"");
+        Log.v("ROUUTTTES",r);
+        for (String s : r.split(",")) {
+            Log.v("ROUUTTTES",s);
+            if(s.length()>0)
+                routes.add(s);
+        }
+        ArrayAdapter<String> adapterRoutes = new ArrayAdapter<String>(getActivity(),
+                R.layout.drop_down_items,routes);
+        itemRout.setAdapter(adapterRoutes);
+
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
                 R.layout.drop_down_items,data);
-        dropList.setAdapter(adapter);
+
+
+
         ListView listView = (ListView) f.findViewById(R.id.productList);
         productsList=new ProductsList(data);
         listView.setAdapter(productsList);
@@ -360,9 +385,16 @@ public class AddChargement extends Fragment {
             @Override
             public void onClick(View view) {// TODO send to erp ! "route_id","date","products_list","image"
                 Log.v("Sending","Rapport de Chargement");
-
                 String route= routeInput.getEditText().getText().toString();
-                String date=""+(selected_day+1)+"/"+(selected_month+1)+"/"+(thisYear-selected_year);
+                String  s_day=""+(selected_day+1);
+                if(selected_day+1 < 10){
+                    s_day="0"+(selected_day+1);
+                }
+                String  s_month=""+(selected_month+1);
+                if(selected_day+1 < 10){
+                    s_month="0"+(selected_day+1);
+                }
+                String date=""+(thisYear-selected_year)+"-"+s_month+"-"+s_day;
                 String products="";
                 for(String s:data){
                     products=products+s+" ";
@@ -404,7 +436,9 @@ public class AddChargement extends Fragment {
         routeInput.getEditText().setText(route_id);
         data=new ArrayList<>();
         for ( String s: products_list.split(" ")){
-            data.add(s);
+            if(s.replace(" ","").compareTo("")!=0){
+                data.add(s);
+            }
         }
         productsList.setProductsArray(data);
         if(date.split("/").length==3){
@@ -433,5 +467,9 @@ public class AddChargement extends Fragment {
         }
 
 
+    }
+
+    public void setImageStatus(String status) {
+        imageStatus.setHint(status);
     }
 }

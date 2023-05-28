@@ -59,37 +59,40 @@ public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
     private ImageView croppedImageView;
-        /*
-    DocumentScanner documentScanner = new DocumentScanner(
-            this,
-            (croppedImageResults) -> {
-                // display the first cropped image
-                croppedImageView.setImageBitmap(
-                        BitmapFactory.decodeFile(croppedImageResults.get(0))
-                );
-                //croppedImageView img json
-                try {
-                    DataManager.sendInvoice(croppedImageResults.get(0));
-                    DataManager.getInvoices();
-                }catch (Exception e){
-                    Log.v("Error",e.getMessage());
-                }
-                return null;
-            },
-            (errorMessage) -> {
-                // an error happened
-                Log.v("documentscannerlogs", errorMessage);
-                return null;
-            },
-            () -> {
-                // user canceled document scan
-                Log.v("documentscannerlogs", "User canceled document scan");
-                return null;
-            },
-            null,
-            null,
-            null
-    );*/
+
+
+
+    /*
+DocumentScanner documentScanner = new DocumentScanner(
+        this,
+        (croppedImageResults) -> {
+            // display the first cropped image
+            croppedImageView.setImageBitmap(
+                    BitmapFactory.decodeFile(croppedImageResults.get(0))
+            );
+            //croppedImageView img json
+            try {
+                DataManager.sendInvoice(croppedImageResults.get(0));
+                DataManager.getInvoices();
+            }catch (Exception e){
+                Log.v("Error",e.getMessage());
+            }
+            return null;
+        },
+        (errorMessage) -> {
+            // an error happened
+            Log.v("documentscannerlogs", errorMessage);
+            return null;
+        },
+        () -> {
+            // user canceled document scan
+            Log.v("documentscannerlogs", "User canceled document scan");
+            return null;
+        },
+        null,
+        null,
+        null
+);*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate( savedInstanceState );
@@ -252,6 +255,7 @@ public class MainActivity extends AppCompatActivity {
         runOnUiThread( new Runnable() {
             public void run() {
                 addChargement.setIsEnabled(b);
+
             }
 
         });
@@ -272,4 +276,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public void setImageText(String type, String status) {
+        runOnUiThread( new Runnable() {
+            public void run() {
+                if(type.startsWith("i") || type.startsWith("I")){
+                    addScan.setImageStatus(status);
+                }else{
+                    addChargement.setImageStatus(status);
+                }
+            }
+    });
+    }
 }

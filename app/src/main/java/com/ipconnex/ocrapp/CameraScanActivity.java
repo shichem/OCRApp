@@ -34,8 +34,10 @@ public class CameraScanActivity extends AppCompatActivity {
                 if(type==CameraScanActivity.SEND_CHARGEMENT){
                     try {
                         DataManager.sendRapport(croppedImageResults.get(0));
+                        DataManager.setImageText("rap","Chargement ...");
                     }catch (Exception e){
                         Log.v("Error",e.getMessage());
+
 
                         DataManager.cancelLoading();
                     }
@@ -44,6 +46,7 @@ public class CameraScanActivity extends AppCompatActivity {
 
                 }else{
                     try {
+                        DataManager.setImageText("inv","Chargement ...");
                         DataManager.sendInvoice(croppedImageResults.get(0));
                     }catch (Exception e){
                         Log.v("Error",e.getMessage());

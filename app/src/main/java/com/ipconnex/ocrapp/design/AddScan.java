@@ -1,6 +1,8 @@
 package com.ipconnex.ocrapp.design;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
@@ -51,13 +53,14 @@ public class AddScan extends Fragment {
     private TextInputLayout input_t_retour;
     private TextInputLayout input_total;
     private Intent intent;
+    private TextInputLayout imageStatus;
     private View buttonSendInv ;
     private View buttonStartCam;
     private String[] options_days;
     private String[] options_month;
     private String[] options_years;
     private int selected_day=0,selected_month=0,selected_year=0;
-    private AutoCompleteTextView sYear,sMonth,sDay;
+    private AutoCompleteTextView sYear,sMonth,sDay,itemMagasin;
     Date date = new Date();
     SimpleDateFormat year_formatter = new SimpleDateFormat("yyyy");
     private Integer thisYear = new Integer(year_formatter.format(date));
@@ -108,21 +111,24 @@ public class AddScan extends Fragment {
         }
 
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+        ArrayAdapter<String> adapterD = new ArrayAdapter<String>(getActivity(),
                 R.layout.drop_down_items,options_days);
-        sDay.setAdapter(adapter);
+        sDay.setAdapter(adapterD);
+        sDay.setThreshold(adapterD.getCount());
         if(selected_day>=options_days.length){
             selected_day=0;
         }
         sDay.setText(sDay.getAdapter().getItem(selected_day).toString(), false);
-        adapter = new ArrayAdapter<String>(getActivity(),
+        ArrayAdapter<String> adapterM = new ArrayAdapter<String>(getActivity(),
                 R.layout.drop_down_items,options_month);
-        sMonth.setAdapter(adapter);
+        sMonth.setAdapter(adapterM);
+        sMonth.setThreshold(adapterM.getCount());
 
         sMonth.setText(sMonth.getAdapter().getItem(selected_month).toString(), false);
-        adapter = new ArrayAdapter<String>(getActivity(),
+        ArrayAdapter<String>  adapterY = new ArrayAdapter<String>(getActivity(),
                 R.layout.drop_down_items,options_years);
-        sYear.setAdapter(adapter);
+        sYear.setAdapter(adapterY);
+        sYear.setThreshold(adapterY.getCount());
 
         sYear.setText(sYear.getAdapter().getItem(selected_year).toString(), false);
 
@@ -167,6 +173,7 @@ public class AddScan extends Fragment {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
                 R.layout.drop_down_items,options_days);
         sDay.setAdapter(adapter);
+        sDay.setThreshold(adapter.getCount());
         if(selected_day>=options_days.length){
             selected_day=0;
         }
@@ -270,9 +277,22 @@ public class AddScan extends Fragment {
         input_t_retour= (TextInputLayout)  inflate.findViewById(R.id.retourField);
         input_total= (TextInputLayout)  inflate.findViewById(R.id.totalField);
         input_qte=(TextInputLayout) inflate.findViewById(R.id.qteField);
+        imageStatus=(TextInputLayout) inflate.findViewById(R.id.imageStatus);
         intent= new Intent(getActivity(), CameraScanActivity.class);
+        itemMagasin = inflate.findViewById(R.id.magasinItem);
+        ArrayList <String>magasins = new ArrayList<>();
 
-
+        SharedPreferences sp= getActivity().getSharedPreferences("Login", Context.MODE_PRIVATE);
+        String m= sp.getString(DataManager.MAGASINS,"");
+        Log.v("Magasins",m);
+        for (String s : m.split(",")) {
+            Log.v("MagasinsS",s);
+            if(s.length()>0)
+                magasins.add(s);
+        }
+        ArrayAdapter<String> adapterRoutes = new ArrayAdapter<String>(getActivity(),
+                R.layout.drop_down_items,magasins);
+        itemMagasin.setAdapter(adapterRoutes);
         sDay=inflate.findViewById(R.id.dropBoxDay);
         sMonth=inflate.findViewById(R.id.dropBoxMonth);
         sYear=inflate.findViewById(R.id.dropBoxYear);
@@ -327,7 +347,15 @@ public class AddScan extends Fragment {
                 String image= data.get(0);
                 String facture= data.get(1);
                 String magasin= data.get(2);
-                String date_facture=""+(selected_day+1)+"/"+(selected_month+1)+"/"+(thisYear-selected_year);
+                String  s_day=""+(selected_day+1);
+                if(selected_day+1 < 10){
+                    s_day="0"+(selected_day+1);
+                }
+                String  s_month=""+(selected_month+1);
+                if(selected_day+1 < 10){
+                    s_month="0"+(selected_day+1);
+                }
+                String date_facture=""+(thisYear-selected_year)+"-"+s_month+"-"+s_day;
                 Log.v("date facturation",date_facture);
                 String qte=data.get(3);
                 String client= data.get(4);
@@ -369,5 +397,8 @@ public class AddScan extends Fragment {
         sMonth.setEnabled(b);
         sYear.setEnabled(b);
 
+    }
+    public void setImageStatus(String status) {
+        imageStatus.setHint(status);
     }
 }

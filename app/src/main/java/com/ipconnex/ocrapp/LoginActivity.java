@@ -32,8 +32,8 @@ public class LoginActivity extends AppCompatActivity {
         user =findViewById(R.id.userField);
         password =findViewById(R.id.passewordField);
         loginButton =findViewById(R.id.loginButton);
-        user.getEditText().setText("api@ipconnex.com");
-        password.getEditText().setText("Transat05**");
+        user.getEditText().setText("ramzi_addi@yahoo.fr");
+        password.getEditText().setText("R@mz11848");
 
         SharedPreferences.Editor Ed=sp.edit();
         DataManager.setLoginActivity(this);
@@ -43,8 +43,9 @@ public class LoginActivity extends AppCompatActivity {
         String sid = sp.getString(DataManager.SESSIONID,"");
         if(usr!="" && mdp!="" && sid!=""){
             try {
+
                 setLoginIsEnabled(false);
-                DataManager.senLogin(usr,mdp);
+                DataManager.sendLogin(usr,mdp);
                 // goto main activity if correct
             }catch (Exception e){
                 //activate login inputs
@@ -81,7 +82,7 @@ public class LoginActivity extends AppCompatActivity {
                 String passwordValue = password.getEditText().getText().toString();
                 try {
                     setLoginIsEnabled(false);
-                    DataManager.senLogin(userValue,passwordValue);
+                    DataManager.sendLogin(userValue,passwordValue);
                 } catch (Exception e) {
                     setLoginIsEnabled(true);
                     startToast("Erreur de connection ");

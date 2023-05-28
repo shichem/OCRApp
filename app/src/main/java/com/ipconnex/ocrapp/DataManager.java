@@ -1,5 +1,6 @@
 package com.ipconnex.ocrapp;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -40,21 +41,24 @@ public class DataManager {
     private static  final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private static final MediaType MEDIA_TYPE = MediaType.parse("image");
     private static String URL_API="https://ipconnex2.frappe.cloud/api";
-
     private static String URL_LOGIN=URL_API+"/method/login";
     private static String URL_CHARGEMENT=URL_API+"/resource/RapportChargement";
-    private static String URL_LISTCHARGEMENTS=URL_API+"/resource/RapportChargement?fields=[\"route_id\",\"date\",\"products_list\",\"image\"]";
-
+    private static String URL_ACCESS=URL_API+"/resource/OCR-UserAcess/";
+    private static String URL_DistributionNRoute=URL_API+"/resource/DistributionRoute/";
+    private static String URL_LISTCHARGEMENTS=URL_API+"/resource/RapportChargement?fields=[\"route_id\",\"date\",\"products_list\",\"image\"]&limit_page_length=9999&order_by=date%20desc";
     private static String URL_FACTURE="https://ipconnex2.frappe.cloud/api/resource/Facture";
-
-    private static String URL_LISTFACTURES="https://ipconnex2.frappe.cloud/api/resource/Facture?fields=[\"num_client\",\"num_magazin\",\"num_facture\",\"total\",\"total_vendu\",\"total_retour\",\"scan_facture\",\"qte\",\"date_facture\"]";
-
+    private static String URL_LISTFACTURES="https://ipconnex2.frappe.cloud/api/resource/Facture?fields=[\"num_client\",\"num_magazin\",\"num_facture\",\"total\",\"total_vendu\",\"total_retour\",\"scan_facture\",\"qte\",\"date_facture\"]&limit_page_length=9999&order_by=date_facture%20desc";
     private static final String URL_CAPTURES= "https://ocr-api.ipconnex.com/api/captures/";
     private static final String URL_RAPPORTS= "https://ocr-api.ipconnex.com/api/chargement/";
+    private static final String PDF_API= "https://ocr-api.ipconnex.com/pdf/";
     private static String image_path ="";
     public static String USERNAME="username";
     public static String PASSWORD="password";
     public static String SESSIONID="sid";
+    public static String MAGASINS="magasin";
+    public static String ROUTE="route";
+    public static String routes="";
+    public static String magasins="";
     public static void setLoginActivity(LoginActivity loginActivity) {
         DataManager.loginActivity = loginActivity;
     }
@@ -68,7 +72,7 @@ public class DataManager {
     }
 
 
-    public static void senLogin(String  username, String password) throws Exception{
+    public static void sendLogin(String  username, String password) throws Exception{
         String json = "{\r\n\"usr\": \""+username+"\",\r\n\"pwd\": \""+password+"\"\r\n}";
         RequestBody body= RequestBody.create(JSON, json);
 
@@ -96,6 +100,13 @@ public class DataManager {
                             List<String> Cookielist = response.headers().values("Set-Cookie");
                             String jsessionid = (Cookielist .get(0).split(";"))[0];
                             Log.v("Session",jsessionid);
+                            try{
+                                getAccess(username,jsessionid);
+                            }catch (Exception e){
+                                Log.v("Error","Error");
+
+                            }
+
                             loginActivity.login(username, password,jsessionid);
                         }else{
                             loginActivity.setLoginIsEnabled(true);
@@ -112,12 +123,18 @@ public class DataManager {
     public static void getInvoices () throws Exception {
         SharedPreferences sp=mainActivity.getSharedPreferences("Login", mainActivity.MODE_PRIVATE);
         String sid = sp.getString(DataManager.SESSIONID,"");
+        String user = sp.getString(DataManager.USERNAME,"");
+        String magasin =sp.getString(DataManager.MAGASINS,"");
+        String url= URL_LISTFACTURES;
 
+        if(magasins!=""){
+            url=url+"&filters=[[%22num_magazin%22,%22in%22,%22"+magasin+"%22]]";
+        }
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().addHeader( "Content-Type", "multipart/form-data")
                 .addHeader("Authorization", "Bearer "+sid)
-                .addHeader("Cookie", "full_name=API;"+sid+"; system_user=yes; user_id=api%40ipconnex.com; user_image=")
-                .url(URL_LISTFACTURES)
+                .addHeader("Cookie", "full_name=API;"+sid+"; system_user=yes; user_id="+user+"; user_image=")
+                .url(url)
                 .build();
         client.newCall(request).enqueue(
                 new Callback() {
@@ -190,12 +207,15 @@ public class DataManager {
                     @Override
                     public void onFailure(@NonNull Call call, @NonNull IOException e) {
                         Log.v("Api Error",e.getMessage());
+                        mainActivity.setImageText("Inv","Erreur ");
                         mainActivity.setAddScanIsEnabled(true);
                     }
 
                     @Override
                     public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                         String result = response.body().string();
+
+                        mainActivity.setImageText("Inv","Capture prise");
 
                         Log.v("Api Response",result);
                         cameraScanActivity.finish();
@@ -210,6 +230,7 @@ public class DataManager {
 
         SharedPreferences sp=mainActivity.getSharedPreferences("Login", mainActivity.MODE_PRIVATE);
         String sid = sp.getString(DataManager.SESSIONID,"");
+        String user = sp.getString(DataManager.USERNAME,"");
         Log.v("image",image_path);
 
         RequestBody body= new MultipartBody.Builder().setType(MultipartBody.FORM)
@@ -229,7 +250,7 @@ public class DataManager {
         Request request = new Request.Builder()
                 .url(URL_FACTURE).addHeader( "Content-Type", "multipart/form-data")
                 .addHeader("Authorization", "Bearer "+sid)
-                .addHeader("Cookie", "full_name=API;"+sid+"; system_user=yes; user_id=api%40ipconnex.com; user_image=")
+                .addHeader("Cookie", "full_name=API;"+sid+"; system_user=yes; user_id="+user+"; user_image=")
                 .post(body)
                 .build();
 
@@ -239,6 +260,7 @@ public class DataManager {
                     @Override
                     public void onFailure(@NonNull Call call, @NonNull IOException e) {
                         mainActivity.startToast( "Erreur de connection ... ");
+                        Log.v("response ",e.toString());
                         mainActivity.setAddScanIsEnabled(true);
                         mainActivity.clearData();
                     }
@@ -252,6 +274,7 @@ public class DataManager {
                             mainActivity.clearData();
                         }else{
                             mainActivity.startToast( "Erreur lors de l'envoi de la facture !" );
+                            mainActivity.setAddScanIsEnabled(true);
 
                         }
 
@@ -286,6 +309,7 @@ public class DataManager {
                     @Override
                     public void onFailure(@NonNull Call call, @NonNull IOException e) {
                         Log.v("Api Error",e.getMessage());
+                        mainActivity.setImageText("Rap","Erreur ");
                         mainActivity.setChargementIsEnabled(true);
                     }
 
@@ -296,6 +320,7 @@ public class DataManager {
                         Log.v("Api Response",result);
                         cameraScanActivity.finish();
                         mainActivity.setRecivedRapport(result);
+                        mainActivity.setImageText("Rap","Capture prise");
                         mainActivity.setChargementIsEnabled(true);
                     }
                 }
@@ -306,7 +331,7 @@ public class DataManager {
 
         SharedPreferences sp=mainActivity.getSharedPreferences("Login", mainActivity.MODE_PRIVATE);
         String sid = sp.getString(DataManager.SESSIONID,"");
-        String num_facture="245793";
+        String user = sp.getString(DataManager.USERNAME,"");
         RequestBody body= new MultipartBody.Builder().setType(MultipartBody.FORM)
                 .addFormDataPart("route_id",route_id)
                 .addFormDataPart("date",date)
@@ -317,7 +342,7 @@ public class DataManager {
         Request request = new Request.Builder()
                 .url(URL_CHARGEMENT).addHeader( "Content-Type", "multipart/form-data")
                 .addHeader("Authorization", "Bearer "+sid)
-                .addHeader("Cookie", "full_name=API;"+sid+"; system_user=yes; user_id=api%40ipconnex.com; user_image=")
+                .addHeader("Cookie", "full_name=API;"+sid+"; system_user=yes; user_id=a"+user+"; user_image=")
                 .post(body)
                 .build();
 
@@ -380,13 +405,19 @@ public class DataManager {
 
         SharedPreferences sp=mainActivity.getSharedPreferences("Login", mainActivity.MODE_PRIVATE);
         String sid = sp.getString(DataManager.SESSIONID,"");
+        String user = sp.getString(DataManager.USERNAME,"");
+        String routes = sp.getString(DataManager.ROUTE,"");
         MediaType mediaType = MediaType.parse("text/plain");
         RequestBody body = RequestBody.create(mediaType, "");
+        String url=URL_LISTCHARGEMENTS;
+        if(routes!=""){
+                url=url+"&filters=[[%22route_id%22,%22in%22,%22"+routes+"%22]]";
+        }
         Request request = new Request.Builder()
-                .url(URL_LISTCHARGEMENTS)
+                .url(url)
                 .get()
                 .addHeader("Authorization", "Bearer "+sid)
-                .addHeader("Cookie", "full_name=API;"+sid+"; system_user=yes; user_id=api%40ipconnex.com; user_image=")
+                .addHeader("Cookie", "full_name=API;"+sid+"; system_user=yes; user_id="+user+"; user_image=")
                 .build();
         client.newCall(request).enqueue(
                 new Callback() {
@@ -414,17 +445,11 @@ public class DataManager {
                                 list.add(new Chargement(date,route,produits,image));
                             }
                             mainActivity.chargementsList.setListRequest(list);
-
-
                         }catch (Exception e){
                             mainActivity.startToast("Erreur du serveur ... ");
 
 
                         }
-
-
-
-
                     }
                 }
 
@@ -434,7 +459,6 @@ public class DataManager {
 
 
     public static void cancelLoading(){
-
         if(cameraScanActivity == null){
             return ;
 
@@ -455,8 +479,113 @@ public class DataManager {
     }
 
     public static void runURL(String url) {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        String[] splitUrl= url.split("/");
+        String pdfUrl = PDF_API+ splitUrl[splitUrl.length - 1];
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(pdfUrl));
         mainActivity.startActivity(browserIntent);
+
+    }
+    public static void setImageText(String type, String status) {
+        mainActivity.setImageText(type,status);
+    }
+
+    public static void getAccess(String user,String sid) throws Exception{
+        MediaType mediaType = MediaType.parse("text/plain");
+
+        magasins="";
+        routes="";
+        Request request = new Request.Builder()
+                .url(URL_ACCESS+user)
+                .get()
+                .addHeader("Authorization", "Bearer "+sid)
+                .addHeader("Cookie", "full_name=API;"+sid+"; system_user=yes; user_id="+user+"; user_image=")
+                .build();
+        client.newCall(request).enqueue(
+                new Callback() {
+                    @Override
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+
+                        mainActivity.startToast("Erreur de connection ... ");
+                    }
+
+                    @Override
+                    public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                        try{
+                            String s = response.body().string();
+                            JSONObject json = new JSONObject(s);
+                            JSONObject access= new JSONObject(json.getString("data"));
+                            JSONArray routesList= new JSONArray(access.getString("routes_list"));
+                            for(int i=0; i <routesList.length() ;i++) {
+                                JSONObject jRoute= new JSONObject(routesList.get(i).toString());
+                                getMagasins(jRoute.getString("route"),user,sid);
+                                routes = routes +jRoute.getString("route")+",";
+                                Log.v("AccessResponse route",routes);
+                            }
+                            if(routes==""){
+                                mainActivity.startToast("AccessError : Verify ERP ACCESSS");
+                            }else{
+
+                                SharedPreferences sp=getMainActivity().getSharedPreferences("Login", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor Ed=sp.edit();
+                                Ed.putString(DataManager.ROUTE,routes);
+                                Ed.apply();
+                            }
+                        }catch (Exception e ){
+                            mainActivity.startToast("AccessError : Verify ERP ACCESSS");
+                        }
+
+                    }
+                }
+
+        );
+
+
+    }
+
+    private static void getMagasins(String route,String user, String sid) {
+        MediaType mediaType = MediaType.parse("text/plain");
+        Request request = new Request.Builder()
+                .url(URL_DistributionNRoute+route)
+                .get()
+                .addHeader("Authorization", "Bearer "+sid)
+                .addHeader("Cookie", "full_name=API;"+sid+"; system_user=yes; user_id="+user+"; user_image=")
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                mainActivity.startToast("Erreur de connection ... ");
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                try{
+                SharedPreferences sp=getMainActivity().getSharedPreferences("Login", Context.MODE_PRIVATE);
+                SharedPreferences.Editor Ed=sp.edit();
+
+                String s = response.body().string();
+                JSONObject json = new JSONObject(s);
+                JSONObject jdata= new JSONObject(json.getString("data"));
+                JSONArray jMagasinArray=new JSONArray(jdata.getString("magasins"));
+                for(int i=0; i <jMagasinArray.length() ;i++) {
+                    //num_magasin
+                    JSONObject jMagasin= new JSONObject(jMagasinArray.get(i).toString());
+                    String numMagasin= jMagasin.getString("num_magasin") ;
+                    magasins=magasins+numMagasin+",";
+                    Ed.putString(DataManager.MAGASINS,magasins);
+                    Ed.apply();
+
+
+
+                }
+                Log.v("MagList:",magasins);
+
+
+                }
+                catch (Exception e){
+                    mainActivity.startToast("AccessError : Verify ERP ACCESSS");
+                }
+            }
+        });
 
     }
 }

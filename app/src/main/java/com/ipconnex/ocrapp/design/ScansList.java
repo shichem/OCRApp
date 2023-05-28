@@ -453,8 +453,8 @@ public class ScansList extends Fragment implements AdapterView.OnItemClickListen
                     @Override
                     public void onClick(View v) {
                         Log.v("search","search");
-                        String date_A=""+(selected_dayA+1)+"/"+(selected_monthA+1)+"/"+(thisYear-selected_yearA);
-                        String date_B=""+(selected_dayB+1)+"/"+(selected_monthB+1)+"/"+(thisYear-selected_yearB);
+                        String date_A=""+(thisYear-selected_yearA)+"-"+(selected_monthA+1)+"-"+(selected_dayA+1);
+                        String date_B=""+(thisYear-selected_yearB)+"-"+(selected_monthB+1)+"-"+(selected_dayB+1);
                         String facture =factureField.getEditText().getText().toString();
                         String magasin =magasinField.getEditText().getText().toString();
                         String client =clientField.getEditText().getText().toString();

@@ -19,7 +19,7 @@ tools:context=".design.AddScan">
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="100dp"
+            android:layout_marginTop="170dp"
             app:boxCornerRadiusBottomEnd="20dp"
             android:hint="@string/id_invoice">
 
@@ -35,7 +35,7 @@ tools:context=".design.AddScan">
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="170dp"
+            android:layout_marginTop="240dp"
             app:boxCornerRadiusBottomEnd="20dp"
 
             android:hint="@string/id_customer">
@@ -49,18 +49,21 @@ tools:context=".design.AddScan">
         </com.google.android.material.textfield.TextInputLayout>
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/magasinField"
+            android:layout_marginTop="310dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            app:helperTextEnabled="true"
+            android:hint="@string/id_shop"
             android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="240dp"
-            app:boxCornerRadiusBottomEnd="20dp"
+            tools:ignore="MissingConstraints">
 
-            android:hint="@string/id_shop">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <AutoCompleteTextView
+                android:id="@+id/magasinItem"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
+                android:layout_height="match_parent"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -73,7 +76,7 @@ tools:context=".design.AddScan">
             android:layout_marginHorizontal="20dp"
             android:layout_gravity="end"
             android:layout_marginEnd="20dp"
-            android:layout_marginTop="310dp"
+            android:layout_marginTop="380dp"
             android:hint="@string/year"
             app:helperTextEnabled="true"
             tools:ignore="MissingConstraints">
@@ -94,7 +97,7 @@ tools:context=".design.AddScan">
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="310dp"
+            android:layout_marginTop="380dp"
             android:hint="@string/day"
             app:helperTextEnabled="true"
             android:weightSum="1"
@@ -114,7 +117,7 @@ tools:context=".design.AddScan">
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="310dp"
+            android:layout_marginTop="380dp"
             android:hint="@string/month"
             app:helperTextEnabled="true"
             android:weightSum="1"
@@ -135,7 +138,7 @@ tools:context=".design.AddScan">
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="380dp"
+            android:layout_marginTop="450dp"
             app:boxCornerRadiusBottomEnd="20dp"
 
             android:hint="@string/qte">
@@ -154,7 +157,7 @@ tools:context=".design.AddScan">
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="450dp"
+            android:layout_marginTop="520dp"
             app:boxCornerRadiusBottomEnd="20dp"
 
             android:hint="@string/t_vendu">
@@ -171,7 +174,7 @@ tools:context=".design.AddScan">
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="520dp"
+            android:layout_marginTop="590dp"
             app:boxCornerRadiusBottomEnd="20dp"
 
             android:hint="@string/t_retour">
@@ -188,7 +191,7 @@ tools:context=".design.AddScan">
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="590dp"
+            android:layout_marginTop="660dp"
             app:boxCornerRadiusBottomEnd="20dp"
 
             android:hint="@string/total">
@@ -204,10 +207,10 @@ tools:context=".design.AddScan">
         <Button
             android:id="@+id/validateInvoice"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="120dp"
-            android:layout_marginTop="660dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="30dp"
             android:layout_marginBottom="40dp"
             android:clickable="true"
             android:text="@string/ok" />
@@ -226,7 +229,22 @@ tools:context=".design.AddScan">
             app:icon="@drawable/ic_baseline_camera_enhance_24"
         />
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/imageStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="100dp"
+            android:hint="@string/noImage"
+            app:boxCornerRadiusBottomEnd="20dp">
 
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:enabled="false"
+                android:inputType="text" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
     </FrameLayout>
 

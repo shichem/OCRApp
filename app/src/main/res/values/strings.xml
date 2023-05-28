@@ -40,7 +40,7 @@
         "Material is the metaphor.\n\n"
         "when a user tries to pick up one of cards.\n\n"
     </string>
-    <string name="donwloadPDF">La facture en pdf</string>
+    <string name="donwloadPDF">Acceder a la facture</string>
     <string name="qte">Quantité :</string>
     <string name="date">Date :</string>
 
@@ -54,10 +54,11 @@
     <string name="produit">produit : </string>
     <string name="ajouter">ajouter</string>
     <string name="supprimer">supprimer</string>
-    <string name="bttnRapportPDF">Le rapport en pdf</string>
+    <string name="bttnRapportPDF">Acceder au rapport </string>
     <string name="rapportchargement">Rapport de chargement </string>
     <string name="listeProduits">Produits: </string>
     <string name="search" />
     <string name="after">Apres :</string>
     <string name="before">Avant :</string>
+    <string name="noImage">Aucune Capture</string>
 </resources>
